@@ -20,5 +20,12 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        //Ovo poziva seedere da se generisu
+        $this->call(QuestionCategorySeeder::class);
+        $this->call(QuestionSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(LeaderboardSeeder::class);
+       
     }
 }
