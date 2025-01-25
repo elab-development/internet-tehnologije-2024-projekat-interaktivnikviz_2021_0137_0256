@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Leaderboard;
 use Illuminate\Http\Request;
+use App\Http\Resources\LeaderboardResource;
 
 class LeaderboardController extends Controller
 {
@@ -13,7 +15,8 @@ class LeaderboardController extends Controller
      */
     public function index()
     {
-        //
+        $results = Leaderboard::all();
+        return $results;
     }
 
     /**
@@ -40,21 +43,31 @@ class LeaderboardController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Leaderboard  $leaderboard
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+
+    /*public function show($leaderboard_id) OVO JE ZAKOMENTARISANO KAKO BI SE OMOGUCILI RESURSI!
     {
-        //
+        $result = Leaderboard::find($leaderboard_id);
+    if (is_null($result)){
+        return response()->json('Rezultat nije pronađen', 404);
     }
+    return response()->json($result); 
+    }*/
+
+    public function show(Leaderboard $leaderboard)
+{
+    return new LeaderboardResource($leaderboard);
+}
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Leaderboard  $leaderboard
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Leaderboard $leaderboard)
     {
         //
     }
@@ -63,10 +76,10 @@ class LeaderboardController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Leaderboard  $leaderboard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Leaderboard $leaderboard)
     {
         //
     }
@@ -74,10 +87,10 @@ class LeaderboardController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Leaderboard  $leaderboard
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Leaderboard $leaderboard)
     {
         //
     }

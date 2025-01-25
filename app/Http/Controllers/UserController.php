@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -13,8 +15,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return $users;
     }
+
+    public function show($user_id)
+{
+    $user = User::find($user_id);
+    if (is_null($user)){
+        return response()->json('Korisnik nije pronađen', 404);
+    }
+    return response()->json($user);     
+} 
+
 
     /**
      * Show the form for creating a new resource.
@@ -23,7 +36,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return 'Jebem ti oca';
     }
 
     /**
@@ -40,21 +53,17 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
         //
     }
@@ -63,10 +72,10 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -74,10 +83,10 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         //
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QuestionCategory;
 use Illuminate\Http\Request;
 
 class QuestionCategoryController extends Controller
@@ -13,7 +14,8 @@ class QuestionCategoryController extends Controller
      */
     public function index()
     {
-        //
+        $question_categories = QuestionCategory::all();
+        return $question_categories;
     }
 
     /**
@@ -40,21 +42,25 @@ class QuestionCategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\QuestionCategory  $questionCategory
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($question_category_id)
     {
-        //
+        $question_category = QuestionCategory::find($question_category_id);
+        if (is_null($question_category)){
+            return response()->json('Kategorija nije pronadjena', 404);
+        }
+        return response()->json($question_category);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\QuestionCategory  $questionCategory
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(QuestionCategory $questionCategory)
     {
         //
     }
@@ -63,10 +69,10 @@ class QuestionCategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\QuestionCategory  $questionCategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, QuestionCategory $questionCategory)
     {
         //
     }
@@ -74,10 +80,10 @@ class QuestionCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\QuestionCategory  $questionCategory
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(QuestionCategory $questionCategory)
     {
         //
     }
