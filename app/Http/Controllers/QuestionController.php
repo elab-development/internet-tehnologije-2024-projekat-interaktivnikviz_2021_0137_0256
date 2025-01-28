@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Http\Resources\QuestionResource;
+use App\Models\QuestionCategory;
+use Illuminate\Support\Facades\Log; // Ensure Log facade is imported
 
 class QuestionController extends Controller
 {
@@ -26,7 +28,8 @@ class QuestionController extends Controller
      */
     public function create()
     {
-        //
+        $categories = QuestionCategory::all();
+    return view('questions.create', compact('categories'));
     }
 
     /**
@@ -37,7 +40,57 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Log the request data for debugging
+        \Log::info('Request data:', $request->all());
+
+        // Decode the options field
+        $request->merge(['options' => json_decode($request->input('options'), true)]);
+
+        // Validacija podataka
+        $validated = $request->validate([
+            'category_id' => 'required|exists:question_categories,id',
+            'question' => 'required|string',
+            'options' => 'required|array',
+            'answer' => 'required|string',
+            'points' => 'required|integer|min:0',
+        ]);
+
+        // Log a custom message
+        \Log::info('After validation');
+
+        try {
+            $question = Question::create([
+                'category_id' => $validated['category_id'],
+                'question' => $validated['question'],
+                'options' => json_encode($validated['options']), // Laravel će ovo automatski konvertovati
+                'answer' => $validated['answer'],
+                'points' => $validated['points'],
+            ]);
+
+            return response()->json([
+                'message' => 'Question created successfully',
+                'question' => $question
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log validation errors
+            \Log::error('Validation errors:', ['errors' => $e->errors()]);
+
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // Log any other errors during the creation process
+            \Log::error('Error creating question:', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'message' => 'Failed to create question',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        // Log a custom message
+        \Log::info('After question creation');
     }
 
     /**

@@ -17,7 +17,10 @@ use App\Http\Controllers\LeaderboardController;
 |
 */
 
-
+Route::resource('questions', QuestionController::class);
+Route::resource('leaderboards', LeaderboardController::class);
+Route::resource('users', UserController::class);
+Route::resource('question_categories', QuestionCategoryController::class);
 
 Route::get('/', function () {
     return view('welcome');
