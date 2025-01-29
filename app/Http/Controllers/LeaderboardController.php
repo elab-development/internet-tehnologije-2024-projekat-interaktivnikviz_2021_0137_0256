@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Leaderboard;
 use Illuminate\Http\Request;
 use App\Http\Resources\LeaderboardResource;
+use App\Models\User;
 
 class LeaderboardController extends Controller
 {
@@ -35,9 +36,15 @@ class LeaderboardController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(User $user)
     {
-        //
+    
+        $leaderboard = Leaderboard::create([
+            'user_id' => $user->id,
+            'points' => 0
+        ]);
+    
+        return $leaderboard;
     }
 
     /**

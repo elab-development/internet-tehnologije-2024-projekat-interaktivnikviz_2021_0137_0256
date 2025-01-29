@@ -25,7 +25,7 @@ class QuestionCategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -36,7 +36,48 @@ class QuestionCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Log the request data for debugging
+        \Log::info('Request data:', $request->all());
+
+        // Validacija podataka
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
+
+        // Log a custom message
+        \Log::info('After validation');
+
+        try {
+            $category = QuestionCategory::create([
+                'name' => $validated['name'],
+                'description' => $validated['description']
+            ]);
+
+            return response()->json([
+                'message' => 'Category created successfully',
+                'category' => $category
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log validation errors
+            \Log::error('Validation errors:', ['errors' => $e->errors()]);
+
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // Log any other errors during the creation process
+            \Log::error('Error creating category:', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'message' => 'Failed to create category',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        // Log a custom message
+        \Log::info('After question creation');
     }
 
     /**

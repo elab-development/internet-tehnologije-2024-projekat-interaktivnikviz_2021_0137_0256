@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\LeaderboardController;
 
 class UserController extends Controller
 {
@@ -36,7 +38,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return 'Jebem ti oca';
+        return view('users.create');
     }
 
     /**
@@ -47,7 +49,32 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Log the request data for debugging
+        \Log::info('Request data:', $request->all());
+        
+        try{
+        $request->validate([
+            'username' => 'required|string|max:255|unique:users,username',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);} catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Greška prilikom validacije podataka');
+        }
+
+        // Log a custom message
+        \Log::info('After validation');
+    
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+         // Pozivamo store metodu LeaderboardController-a
+        $leaderboardController = new LeaderboardController();
+        $leaderboardController->store($user);
+    
+        return $user;
     }
 
     /**

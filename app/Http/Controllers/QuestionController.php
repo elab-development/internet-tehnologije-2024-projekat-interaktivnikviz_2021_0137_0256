@@ -146,8 +146,17 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
+
+    //Delete view treba da prikaze formu za brisanje pitanja, ali ruta ocigledno ne funkcionise.
+    /*public function deleteView()
+    {
+        $questions = Question::all(); // Dohvata sva pitanja iz baze
+        return view('questions.destroy', compact('questions'));
+    }*/
+
     public function destroy(Question $question)
     {
-        //
+        Question::destroy($question->id);
+        return response()->json('Question deleted successfully');
     }
 }
