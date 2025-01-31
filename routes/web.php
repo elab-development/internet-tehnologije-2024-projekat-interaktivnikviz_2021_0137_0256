@@ -22,8 +22,8 @@ Route::resource('questions', QuestionController::class);
 Route::resource('leaderboards', LeaderboardController::class);
 Route::resource('users', UserController::class);
 Route::resource('question_categories', QuestionCategoryController::class);
-
-
+Route::get('/questions/delete/{question}', [QuestionController::class, 'showDeleteForm'])->name('questions.showDeleteForm');
+Route::delete('/questions/delete/{question}', [QuestionController::class, 'destroy'])->name('questions.delete');
 Route::get('/', function () {
     return view('welcome');
 });
