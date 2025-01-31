@@ -125,7 +125,8 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        //
+        $categories = QuestionCategory::all();
+        return view('questions.update', compact('question', 'categories'));
     }
 
     /**
@@ -136,9 +137,63 @@ class QuestionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Question $question)
-    {
-        //
+{
+    \Log::info('Entered update method');
+    \Log::info('Request data:', $request->all());
+
+    // Validacija podataka
+    $validated = $request->validate([
+        'category_id' => 'required|exists:question_categories,id',
+        'question' => 'required|string',
+        'options' => 'required|json',  // Validacija kao JSON string
+        'answer' => 'required|string',
+        'points' => 'required|integer|min:0',
+    ]);
+    \Log::info('Validation passed');
+
+    // Decode JSON options
+    $options = json_decode($validated['options'], true); // Dekodirajte JSON string
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        \Log::error('Invalid JSON in options field');
+        return response()->json([
+            'message' => 'Invalid JSON format for options'
+        ], 422);
     }
+
+    \Log::info('Decoded options:', ['options' => $options]);
+
+    try {
+        // Update the question
+        $question->update([
+            'category_id' => $validated['category_id'],
+            'question' => $validated['question'],
+            'options' => json_encode($options), // Ponovno enkodirajte kao JSON
+            'answer' => $validated['answer'],
+            'points' => $validated['points'],
+        ]);
+
+        return response()->json([
+            'message' => 'Question updated successfully',
+            'question' => $question
+        ], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Log validation errors
+        \Log::error('Validation errors:', ['errors' => $e->errors()]);
+
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        // Log any other errors during the update process
+        \Log::error('Error updating question:', ['error' => $e->getMessage()]);
+
+        return response()->json([
+            'message' => 'Failed to update question',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
     /**
      * Remove the specified resource from storage.
@@ -154,9 +209,21 @@ class QuestionController extends Controller
         return view('questions.destroy', compact('questions'));
     }*/
 
-    public function destroy(Question $question)
-    {
-        Question::destroy($question->id);
-        return response()->json('Question deleted successfully');
+    // Metod za prikazivanje forme za brisanje
+public function showDeleteForm(Question $question)
+{
+    return view('questions.delete', compact('question'));
+}
+
+// Metod za brisanje pitanja
+public function destroy(Question $question)
+{
+    try {
+        $question->delete();
+        
+        return redirect()->route('questions.index')->with('success', 'Question deleted successfully.');
+    } catch (\Exception $e) {
+        return redirect()->route('questions.index')->with('error', 'Failed to delete question.');
     }
+} 
 }
