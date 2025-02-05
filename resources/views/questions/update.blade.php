@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Update Question - skloniti navodnike ispred i iza opcija kako bi radilo</h1>
+    <h1>Update Question</h1>
     <form id="updateForm" action="{{ route('questions.update', $question->id) }}" method="POST">
         @csrf
         @method('PUT')

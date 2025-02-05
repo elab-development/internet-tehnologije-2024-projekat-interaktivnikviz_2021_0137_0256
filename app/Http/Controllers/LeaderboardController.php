@@ -76,7 +76,8 @@ class LeaderboardController extends Controller
      */
     public function edit(Leaderboard $leaderboard)
     {
-        //
+        $users = User::all(); // Uzima sve korisnike iz baze
+        return view('leaderboards.update', compact('leaderboard', 'users'));
     }
 
     /**
@@ -88,7 +89,14 @@ class LeaderboardController extends Controller
      */
     public function update(Request $request, Leaderboard $leaderboard)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'points' => 'required|integer|min:0',
+        ]);
+    
+        $leaderboard->update($validated);
+    
+        return redirect()->route('leaderboards.index')->with('success', 'Leaderboard entry updated successfully.');
     }
 
     /**
@@ -97,8 +105,19 @@ class LeaderboardController extends Controller
      * @param  \App\Models\Leaderboard  $leaderboard
      * @return \Illuminate\Http\Response
      */
+
+     public function showDeleteForm(Leaderboard $leaderboard)
+     {
+         return view('leaderboards.delete', compact('leaderboard'));
+     }
+    
     public function destroy(Leaderboard $leaderboard)
     {
-        //
+        try {
+            $leaderboard->delete();
+            return redirect()->route('leaderboards.index')->with('success', 'Leaderboards record deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('leaderboards.index')->with('error', 'Failed to delete leaderboards record.');
+        }
     }
 }

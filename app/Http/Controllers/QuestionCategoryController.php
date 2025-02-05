@@ -103,7 +103,7 @@ class QuestionCategoryController extends Controller
      */
     public function edit(QuestionCategory $questionCategory)
     {
-        //
+        return view('categories.update', compact('questionCategory'));
     }
 
     /**
@@ -115,7 +115,43 @@ class QuestionCategoryController extends Controller
      */
     public function update(Request $request, QuestionCategory $questionCategory)
     {
-        //
+    \Log::info('Request data:', $request->all());
+
+    // Validacija podataka
+    $validated = $request->validate([
+        'name' => 'required|string',
+        'description' => 'required|string',
+    ]);
+    \Log::info('Validation passed');
+
+    try {
+        // Update question category
+        $questionCategory->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+        ]);
+
+        return response()->json([
+            'message' => 'Question category updated successfully',
+            'questionCategory' => $questionCategory
+        ], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Log validation errors
+        \Log::error('Validation errors:', ['errors' => $e->errors()]);
+
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        // Log any other errors during the update process
+        \Log::error('Error updating question category:', ['error' => $e->getMessage()]);
+
+        return response()->json([
+            'message' => 'Failed to update question category',
+            'error' => $e->getMessage()
+        ], 500);
+    }
     }
 
     /**
@@ -124,8 +160,21 @@ class QuestionCategoryController extends Controller
      * @param  \App\Models\QuestionCategory  $questionCategory
      * @return \Illuminate\Http\Response
      */
+
+    // Metod za prikazivanje forme za brisanje
+    public function showDeleteForm(QuestionCategory $questionCategory)
+    {
+        return view('categories.delete', compact('questionCategory'));
+    }
+
     public function destroy(QuestionCategory $questionCategory)
     {
-        //
+        try {
+            $questionCategory->delete();
+            
+            return redirect()->route('question_categories.index')->with('success', 'Question category deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('question_categories.index')->with('error', 'Failed to delete question category.');
+        }
     }
 }

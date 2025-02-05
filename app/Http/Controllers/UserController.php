@@ -92,7 +92,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+        return view('users.update', compact('user'));
     }
 
     /**
@@ -104,7 +104,22 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:6',
+        ]);
+    
+        $user->username = $validated['username'];
+        $user->email = $validated['email'];
+    
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validated['password']);
+        }
+    
+        $user->save();
+    
+        return redirect()->route('users.update', $user)->with('success', 'User updated successfully.');
     }
 
     /**
@@ -113,8 +128,19 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
+
+     public function showDeleteForm(User $user)
+     {
+         return view('users.delete', compact('user'));
+     }
+
     public function destroy(User $user)
     {
-        //
+        try {
+            $user->delete();
+            return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', 'Failed to delete user.');
+        }
     }
 }
