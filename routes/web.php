@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuestionCategoryController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\API\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,8 @@ Route::get('/users/{user}/delete/', [UserController::class, 'showDeleteForm'])->
 Route::delete('/users/{user}/delete', [UserController::class, 'destroy'])->name('users.delete');
 Route::get('/leaderboards/{leaderboard}/delete/', [LeaderboardController::class, 'showDeleteForm'])->name('leaderboards.showDeleteForm');
 Route::delete('/leaderboards/{leaderboard}/delete', [LeaderboardController::class, 'destroy'])->name('leaderboards.delete');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::get('/', function () {
     return view('welcome');
 });
