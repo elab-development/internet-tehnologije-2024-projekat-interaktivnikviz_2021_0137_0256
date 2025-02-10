@@ -39,23 +39,12 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-           ],
+        ],
 
-  'admin'=>[
-            'driver'=> 'session',
-            'provider'=> 'admins',
-           ],
-
-  'admin-api' => [
+        'api' => [
             'driver' => 'sanctum',
-            'provider' => 'admins',
-           ],
-
-  'api'=> [
-            'driver'=> 'token',
-            'provider'=> 'users',
-           ],
-
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -79,10 +68,6 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
-        ],
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Admin::class),
         ],
     ],
 

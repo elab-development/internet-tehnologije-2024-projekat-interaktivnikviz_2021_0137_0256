@@ -6,7 +6,8 @@ use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Http\Resources\QuestionResource;
 use App\Models\QuestionCategory;
-use Illuminate\Support\Facades\Log; // Ensure Log facade is imported
+use Illuminate\Support\Facades\Log;
+use App\Events\QuestionCreated; 
 
 class QuestionController extends Controller
 {
@@ -66,6 +67,8 @@ class QuestionController extends Controller
                 'answer' => $validated['answer'],
                 'points' => $validated['points'],
             ]);
+
+            event(new QuestionCreated($question)); // Okida se event posle pravljenja pitanja
 
             return response()->json([
                 'message' => 'Question created successfully',

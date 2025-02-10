@@ -20,29 +20,25 @@ use App\Http\Controllers\API\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', function(Request $request) {
         return auth()->user();
     });
-    Route::resource('questions', PostController::class)->only(['update','store','destroy']);
+    Route::resource('questions', QuestionController::class)->only(['update', 'store', 'destroy']);
 
     // API route for logout user
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
-Route::group(['middleware' => ['auth:admin-api']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::get('/admin/dashboard', function () {
         return response()->json(['message' => 'Welcome to admin dashboard']);
     });
 });
-
-Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 
 //Privremeno premestene rute u web.php nakon rada sa Reactom vratiti ih ovde
 
@@ -52,4 +48,3 @@ Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 Route::resource('leaderboards', LeaderboardController::class);
 Route::resource('users', UserController::class);
 Route::resource('question_categories', QuestionCategoryController::class);*/
-
