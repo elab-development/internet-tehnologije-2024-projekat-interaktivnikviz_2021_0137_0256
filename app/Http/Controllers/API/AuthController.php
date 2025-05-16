@@ -55,22 +55,31 @@ class AuthController extends Controller
     }
 
     public function loginAdmin(Request $request)
-    {
-        if (!Auth::attempt($request->only('email', 'password')))  {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        $admin = User::where('email', $request['email'])
-            ->where('role', 'admin')
-            ->firstOrFail();
-
-        $token = $admin->createToken('auth_token')->plainTextToken;
-
-        return response()->json(['message' => 'Hi ' . $admin->username . ', welcome to admin home', 'access_token' => $token, 'token_type' => 'Bearer']);
+{
+    if (!Auth::attempt($request->only('email', 'password')))  {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    public function logout(Request $request)
-    {
-        // Logout logic...
+    $user = Auth::user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Access denied: not an admin'], 403);
     }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Hi ' . $user->username . ', welcome to admin home',
+        'access_token' => $token,
+        'token_type' => 'Bearer'
+    ]);
+}
+
+
+   public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
 }

@@ -34,7 +34,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
-Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
+Route::group(['middleware' => ['auth:sanctum','admin']], function () {
+    Route::get('/admin/profile', function(Request $request) {
+        return auth()->user();
+    });
     Route::get('/admin/dashboard', function () {
         return response()->json(['message' => 'Welcome to admin dashboard']);
     });
