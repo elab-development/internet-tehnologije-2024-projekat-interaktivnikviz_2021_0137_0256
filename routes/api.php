@@ -20,20 +20,29 @@ use App\Http\Controllers\API\AuthController;
 |
 */
 
+//Rute za koje ne treba privilegija
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
+Route::resource('questions', QuestionController::class)->only(['show', 'index']);
 
+//Korisnicke rute
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', function(Request $request) {
         return auth()->user();
     });
-    Route::resource('questions', QuestionController::class)->only(['update', 'store', 'destroy']);
 
-    // API route for logout user
+    //Resursne rute za korisnike
+    Route::resource('questions', QuestionController::class)->only(['show', 'index']);
+    Route::resource('question_categories', QuestionCategoryController::class)->only(['show', 'index']);
+    Route::resource('leaderboards', LeaderboardController::class)->only(['show']);
+
+
+    // API ruta za logout korisnika
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+//Administrator rute
 Route::group(['middleware' => ['auth:sanctum','admin']], function () {
     Route::get('/admin/profile', function(Request $request) {
         return auth()->user();
@@ -41,13 +50,19 @@ Route::group(['middleware' => ['auth:sanctum','admin']], function () {
     Route::get('/admin/dashboard', function () {
         return response()->json(['message' => 'Welcome to admin dashboard']);
     });
+
+    //Resursne rute za Administratora
+    Route::resource('questions', QuestionController::class);
+    Route::resource('question_categories', QuestionCategoryController::class);
+    Route::resource('leaderboards', LeaderboardController::class);
+    Route::resource('users', UserController::class);
+
+    //Rute za brisanje
+    Route::delete('/questions/{question}/delete', [QuestionController::class, 'destroy'])->name('questions.delete');
+    Route::delete('/question_categories/{questionCategory}/delete', [QuestionCategoryController::class, 'destroy'])->name('question_categories.delete');
+    Route::delete('/users/{user}/delete', [UserController::class, 'destroy'])->name('users.delete');
+    Route::delete('/leaderboards/{leaderboard}/delete', [LeaderboardController::class, 'destroy'])->name('leaderboards.delete');
+
+    // API ruta za logout administatora
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
-
-//Privremeno premestene rute u web.php nakon rada sa Reactom vratiti ih ovde
-
-
-
-/*Route::resource('questions', QuestionController::class);
-Route::resource('leaderboards', LeaderboardController::class);
-Route::resource('users', UserController::class);
-Route::resource('question_categories', QuestionCategoryController::class);*/

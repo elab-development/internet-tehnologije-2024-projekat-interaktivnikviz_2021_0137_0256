@@ -17,7 +17,9 @@ use App\Http\Controllers\API\AuthController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::resource('questions', QuestionController::class);
+
+//Sve ove rute su premestene u api.php
+/*Route::resource('questions', QuestionController::class);
 Route::resource('leaderboards', LeaderboardController::class);
 Route::resource('users', UserController::class);
 Route::resource('question_categories', QuestionCategoryController::class);
@@ -30,7 +32,8 @@ Route::delete('/users/{user}/delete', [UserController::class, 'destroy'])->name(
 Route::get('/leaderboards/{leaderboard}/delete/', [LeaderboardController::class, 'showDeleteForm'])->name('leaderboards.showDeleteForm');
 Route::delete('/leaderboards/{leaderboard}/delete', [LeaderboardController::class, 'destroy'])->name('leaderboards.delete');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']); */
+
 Route::get('/', function () {
     return view('welcome');
 });
