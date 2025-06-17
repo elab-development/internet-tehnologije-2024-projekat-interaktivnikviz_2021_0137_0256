@@ -33,7 +33,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     //Resursne rute za korisnike
-    Route::resource('questions', QuestionController::class)->only(['show', 'index']);
     Route::resource('question_categories', QuestionCategoryController::class)->only(['show', 'index']);
     Route::resource('leaderboards', LeaderboardController::class)->only(['show']);
 
@@ -52,9 +51,6 @@ Route::group(['middleware' => ['auth:sanctum','admin']], function () {
     });
 
     //Resursne rute za Administratora
-    Route::resource('questions', QuestionController::class);
-    Route::resource('question_categories', QuestionCategoryController::class);
-    Route::resource('leaderboards', LeaderboardController::class);
     Route::resource('users', UserController::class);
 
     //Rute za brisanje
