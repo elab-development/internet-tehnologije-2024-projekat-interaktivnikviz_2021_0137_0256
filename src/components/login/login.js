@@ -1,43 +1,74 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import styles from './login.module.css'; // Import your CSS module for styling
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
-    const handleSubmit = async (e) => {
+
+    const handleLogin = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:8000/api/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            navigate('/questions ');//privremena solucija
-        } catch (error) {
-            alert("Pogrešan e-mail ili lozinka!");
+        setLoading(true);
+        setError('');
+
+
+       try {
+            const response = await axios.post('http://127.0.0.1:8000/api/admin/login', { email, password }, {
+                headers: { 'Accept': 'application/json' }
+            });
+ 
+            localStorage.setItem('token', response.data.access_token);
+            window.location.href = '/dashboard';  // Preusmeravanje na admin dashboard
+        } catch (adminError) {
+            try {
+                const userResponse = await axios.post('http://127.0.0.1:8000/api/login', { email, password }, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                localStorage.setItem('token', userResponse.data.access_token);
+                window.location.href = '/questions';  // Preusmeravanje na pitanja OVO JE PLACEHOLDER
+            } catch (userError) {
+                setError('Neuspesno logovanje. Proverite email i lozinku.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
+
  
     return (
-        <div>
-            <h2>Prijava</h2>
-            <form onSubmit={handleSubmit}>
-                <label>Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <label>Lozinka:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Prijavi se</button>
+        <div className={styles['login-container']}>
+            <h2>Login</h2>
+            <form onSubmit={handleLogin}>
+                <div>
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Logging in...' : 'Login'}
+                </button>
+                {error && <p>{error}</p>}
             </form>
         </div>
     );
-};
+}
  
 export default Login;
