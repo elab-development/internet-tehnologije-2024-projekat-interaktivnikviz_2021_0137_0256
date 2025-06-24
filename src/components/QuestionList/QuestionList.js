@@ -15,8 +15,10 @@ import { Link } from 'react-router-dom';function QuestionList() {
         })
             
             .then(response => {
-                console.log(response.data);
-                setQuestions(response.data);
+                console.log(response.data.data);
+                setQuestions(response.data.data);
+                console.log(questions.options);
+               
             })
             .catch(error => {
                 setError('Failed to fetch questions');
@@ -31,15 +33,9 @@ import { Link } from 'react-router-dom';function QuestionList() {
                 {questions.length > 0 ? questions.map(question => (
                     <div key={question.id} className={styles.questionItem}>
                         <h3>{question.question}</h3>
-                        <p><strong>Category:</strong> {question.category.name}</p>
-                       <p><strong>Options:</strong></p>
-                    <ul>
-                        {question.options && Object.entries(question.options).map(([key, value]) => (
-                            <li key={key}><strong>{key}:</strong> {value}</li>
-                        ))}
-                    </ul>
-                     <p><strong>Points:</strong> {question.points}</p>
-                        <p>{question.body.substring(0, 100)}...</p>
+                        <p><strong>Category:</strong> {question.category_name}</p>
+                     
+                        
                         <Link to={`/questions/${question.id}`} className={styles.readMoreButton}>Read More</Link>
                     </div>
                 )) : <p>No questions available</p>}

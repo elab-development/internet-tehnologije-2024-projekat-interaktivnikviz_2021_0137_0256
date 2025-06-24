@@ -16,33 +16,35 @@ function QuestionDetails() {
             }
         })
             .then(response => {
-                setQuestion(response.data.question);
+                setQuestion(response.data);
             })
             .catch(error => {
                 setError('Failed to fetch question details');
             });
     }, [id]);
  
-    return (
-        <div className={styles.questionDetailsContainer}>
-            {error && <p className={styles.errorMessage}>{error}</p>}
-            {question ? (
-                <div className={styles.questionDetails}>
-                    <h2>{question.question}</h2>
-                    <p><strong>Category:</strong> {question.category.name}</p>
-                    <p><strong>Points:</strong> {question.points}</p>
-                    <p><strong>Options:</strong></p>
-                    <ul>
-                        {question.options && Object.entries(question.options).map(([key, value]) => (
-                            <li key={key}><strong>{key}:</strong> {value}</li>
-                        ))}
-                    </ul>
-                    <p><strong>Answer:</strong> {question.answer}</p>
+   return (
+    <div className={styles.questionDetailsContainer}>
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        {question ? (
+            <div className={styles.questionDetails}>
+                <h2>{question.question}</h2>
+                <p><strong>Category:</strong> {question.category_name}</p>
+                <p><strong>Points:</strong> {question.points}</p>
+                <p><strong>Options:</strong></p>
+                <ul>
+                    {question.options && JSON.parse(question.options).map((option, index) => (
+                        <li key={index}>{option}</li>
+                    ))}
+                </ul>
+                <p><strong>Answer:</strong> {question.answer}</p>
+            </div>
+        ) : (
+            <p>Loading...</p>
+        )}
+    </div>
+);
 
-                </div>
-            ) : <p>Loading...</p>}
-        </div>
-    );
 }
  
 export default QuestionDetails;
