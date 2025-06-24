@@ -15,7 +15,8 @@ import { Link } from 'react-router-dom';function QuestionList() {
         })
             
             .then(response => {
-                setQuestions(response.data.posts);
+                console.log(response.data);
+                setQuestions(response.data);
             })
             .catch(error => {
                 setError('Failed to fetch questions');

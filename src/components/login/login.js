@@ -32,6 +32,7 @@ const Login = () => {
                 localStorage.setItem('token', userResponse.data.access_token);
                 window.location.href = '/questions';  // Preusmeravanje na pitanja OVO JE PLACEHOLDER
             } catch (userError) {
+                console.error('Login failed:', userError);
                 setError('Neuspesno logovanje. Proverite email i lozinku.');
             }
         } finally {
