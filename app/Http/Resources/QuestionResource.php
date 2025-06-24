@@ -14,6 +14,8 @@ class QuestionResource extends JsonResource
             'id'=>$this->resource->id,
             'question'=>$this->resource->question,
             'category'=>$this->resource->category,
+            // Umesto cele category vraćamo samo naziv
+        'category_name' => $this->resource->category ? $this->resource->category->name : null,
 		 'options'=>$this->resource->options,
             'answer' => $this->resource->answer,
             'points' => $this->resource->points

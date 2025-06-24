@@ -18,8 +18,8 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        $questions = Question::all();
-        return $questions;
+        $questions = Question::with('category')->get();
+    return QuestionResource::collection($questions);
     }
 
     /**
@@ -116,6 +116,7 @@ class QuestionController extends Controller
 
     public function show(Question $question)
 {
+     $question->load('category');
     return new QuestionResource($question);
 }
 
