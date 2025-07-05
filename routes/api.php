@@ -56,7 +56,7 @@ Route::group(['middleware' => ['auth:sanctum','admin']], function () {
     //Rute za brisanje
     Route::delete('/questions/{question}/delete', [QuestionController::class, 'destroy'])->name('questions.delete');
     Route::delete('/question_categories/{questionCategory}/delete', [QuestionCategoryController::class, 'destroy'])->name('question_categories.delete');
-    Route::delete('/users/{user}/delete', [UserController::class, 'destroy'])->name('users.delete');
+    //Route::delete('/users/{user}/delete', [UserController::class, 'destroy'])->name('users.delete');
     Route::delete('/leaderboards/{leaderboard}/delete', [LeaderboardController::class, 'destroy'])->name('leaderboards.delete');
 
     // API ruta za logout administatora

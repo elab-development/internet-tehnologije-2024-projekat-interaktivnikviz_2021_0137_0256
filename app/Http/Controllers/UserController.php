@@ -134,13 +134,14 @@ class UserController extends Controller
          return view('users.delete', compact('user'));
      }
 
-    public function destroy(User $user)
-    {
-        try {
-            $user->delete();
-            return redirect()->route('users.index')->with('success', 'User deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('users.index')->with('error', 'Failed to delete user.');
-        }
-    }
+     public function destroy(User $user)
+     {
+         try {
+             $user->delete();
+             return response()->json(['message' => 'User deleted successfully'], 200);
+         } catch (\Exception $e) {
+             return response()->json(['message' => 'Failed to delete user'], 500);
+         }
+     }
+     
 }
