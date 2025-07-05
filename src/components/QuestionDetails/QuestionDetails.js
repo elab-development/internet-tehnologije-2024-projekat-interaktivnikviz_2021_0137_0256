@@ -23,27 +23,38 @@ function QuestionDetails() {
             });
     }, [id]);
  
-   return (
-    <div className={styles.questionDetailsContainer}>
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        {question ? (
-            <div className={styles.questionDetails}>
-                <h2>{question.question}</h2>
-                <p><strong>Category:</strong> {question.category_name}</p>
-                <p><strong>Points:</strong> {question.points}</p>
-                <p><strong>Options:</strong></p>
-                <ul>
-                    {question.options && JSON.parse(question.options).map((option, index) => (
-                        <li key={index}>{option}</li>
-                    ))}
-                </ul>
-                <p><strong>Answer:</strong> {question.answer}</p>
-            </div>
-        ) : (
+    return (
+        <div className={styles.questionDetailsContainer}>
+          {error && <div className={styles.errorBanner}>{error}</div>}
+      
+          {question ? (
+            <>
+              <h2 className={styles.questionTitle}>{question.question}</h2>
+      
+              <p className={styles.questionMeta}>
+                Kategorija: {question.category_name} | Poeni: {question.points}
+              </p>
+      
+              <p className={styles.questionDescription}>Opcije:</p>
+              <ul className={styles.answerList}>
+                {question.options && JSON.parse(question.options).map((option, index) => (
+                  <li key={index}>{option}</li>
+                ))}
+              </ul>
+      
+              <p className={styles.questionDescription}>
+                <strong>Odgovor:</strong> {question.answer}
+              </p>
+      
+              <button onClick={() => window.history.back()} className={styles.backButton}>
+                ← Back
+              </button>
+            </>
+          ) : (
             <p>Loading...</p>
-        )}
-    </div>
-);
+          )}
+        </div>
+      );
 
 }
  

@@ -24,6 +24,7 @@ const Login = () => {
  
             localStorage.setItem('token', response.data.access_token);
             window.location.href = '/dashboard';  // Preusmeravanje na admin dashboard
+            console.log('Admin login successful:', response.data);
         } catch (adminError) {
             try {
                 const userResponse = await axios.post('http://127.0.0.1:8000/api/login', { email, password }, {
