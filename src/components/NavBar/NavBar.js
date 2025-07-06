@@ -3,31 +3,37 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './NavBar.module.css'; // CSS module for scoped styles
  
-function NavBar() {
-    const [isAdmin, setIsAdmin] = useState(false);  // State za proveru admina
-    const navigate = useNavigate();
- 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.get('http://127.0.0.1:8000/api/admin/profile', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                setIsAdmin(true);  
-            })
-            .catch(() => {
+
+    function NavBar({ authChanged }) {
+        const [isAdmin, setIsAdmin] = useState(false);
+        const navigate = useNavigate();
+        const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+        
+        useEffect(() => {
+            const token = localStorage.getItem('token');
+            setIsLoggedIn(!!token); // Update login status
+
+            if (token) {
+                axios.get('http://127.0.0.1:8000/api/admin/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(() => setIsAdmin(true))
+                .catch(() => setIsAdmin(false));
+            } else {
                 setIsAdmin(false);
-            });
-        }
-    }, []);
- 
+            }
+        }, [authChanged]); // dodato u dependency listu
+    
+
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/login'); 
+        setIsAdmin(false); // Resetujemo stanje admina
+        navigate('/login');
+        window.location.reload(); // Reload stranice da bi se osvežili podaci
     };
  
     return (
@@ -44,9 +50,15 @@ function NavBar() {
                 )}
  
                 <li>
+                    {isLoggedIn ? (
                     <button onClick={handleLogout} className={styles.logoutButton}>
                         Logout
                     </button>
+                ) : (
+                    <Link to="/login" className={styles.logoutButton}>
+                        Login
+                    </Link>
+                    )}
                 </li>
             </ul>
         </nav>

@@ -5,6 +5,8 @@ import axios from 'axios';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/login/login';
 import NavBar from './components/NavBar/NavBar';
+import { useState } from 'react';
+
 
 import PrivateRoute from './PrivateRoute'; // Importujemo PrivateRoute komponentu
 import QuestionList from './components/QuestionList/QuestionList'; // Importujemo QuestionListList komponentu
@@ -13,42 +15,37 @@ import Dashboard from './components/Dashboard/Dashboard'; // Importujemo Dashboa
 import AdminRoute from './components/AdminRoute/AdminRoute'; // Importujemo AdminRoute komponentu
 
 function App() {
-  axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  const [authChanged, setAuthChanged] = useState(false);
+  <NavBar authChanged={authChanged} />
 
-  const token = document.querySelector('meta[name="csrf-token"]');
-  if (token) {
-      axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-  } else {
-      console.error('CSRF token not found in document.');
-  }
+  return (
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+  
+        {/* JAVNA RUTA */}
+        <Route path="/questions" element={<QuestionList />} />
+  
+        {/* ZAŠTIĆENE RUTE */}
+        
+  
+        {/* ADMIN ZAŠTIĆENE RUTE */}
 
- return (
-        <Router>
-            <NavBar /> {/* Uključujemo NavBar komponentu */}
-            <Routes>
-                <Route path="/login" element={<Login />} />
-           <Route path="/questions" element={
-          <PrivateRoute> {/* Protect ruta kojoj prosledjujemo dete komponentu QuestionList */}
-            <QuestionList />
-          </PrivateRoute>
-        } />
         <Route path="/questions/:id" element={
-          <PrivateRoute> {/* Protect question details */}
+          <AdminRoute>
             <QuestionDetails />
-          </PrivateRoute>
-        } />
-        <Route path="/dashboard" element={
-          <AdminRoute> {/* Protect dashboard */}
-            <Dashboard />
           </AdminRoute>
         } />
 
-
-
-            </Routes>
-        </Router>
-
-    );
+        <Route path="/dashboard" element={
+          <AdminRoute>
+            <Dashboard />
+          </AdminRoute>
+        } />
+      </Routes>
+    </Router>
+  );
 
 }
 

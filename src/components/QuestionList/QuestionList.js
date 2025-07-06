@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';function QuestionList() {
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+
  
  
     useEffect(() => {
@@ -15,14 +17,21 @@ import { Link } from 'react-router-dom';function QuestionList() {
         })
             
             .then(response => {
-                console.log(response.data.data);
                 setQuestions(response.data.data);
-                console.log(questions.options);
                
             })
             .catch(error => {
                 setError('Failed to fetch questions');
             });
+            if (token) {
+                axios.get('http://127.0.0.1:8000/api/admin/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                .then(() => setIsAdmin(true))
+                .catch(() => setIsAdmin(false));
+            }
     }, []);
  
     return (
@@ -36,9 +45,14 @@ import { Link } from 'react-router-dom';function QuestionList() {
                         <p><strong>Category:</strong> {question.category_name}</p>
                      
                         
-                        <Link to={`/questions/${question.id}`} className={styles.readMoreButton}>Read More</Link>
+                        {isAdmin && (
+                            <Link to={`/questions/${question.id}`} className={styles.readMoreButton}>
+                            Read More
+                            </Link>
+                        )}
+
                     </div>
-                )) : <p>No questions available</p>}
+                )) : <h3>Pitanja se ucitavaju...</h3>}
             </div>
         </div>
     );
