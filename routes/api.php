@@ -34,8 +34,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //Resursne rute za korisnike
     Route::resource('question_categories', QuestionCategoryController::class)->only(['show', 'index']);
-    Route::resource('leaderboards', LeaderboardController::class)->only(['show']);
 
+  Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::resource('leaderboards', LeaderboardController::class)->only(['index', 'show']);
+    // ostale rute
+});
+
+    Route::resource('leaderboards', LeaderboardController::class)->only(['show', 'index']);
 
     // API ruta za logout korisnika
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -52,7 +57,8 @@ Route::group(['middleware' => ['auth:sanctum','admin']], function () {
 
     //Resursne rute za Administratora
     Route::resource('users', UserController::class);
-
+    Route::resource('leaderboards', LeaderboardController::class)->except(['index', 'show']);
+    // ostale admin rute
     //Rute za brisanje
     Route::delete('/questions/{question}/delete', [QuestionController::class, 'destroy'])->name('questions.delete');
     Route::delete('/question_categories/{questionCategory}/delete', [QuestionCategoryController::class, 'destroy'])->name('question_categories.delete');

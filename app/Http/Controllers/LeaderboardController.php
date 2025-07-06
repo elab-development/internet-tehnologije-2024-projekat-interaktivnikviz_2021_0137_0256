@@ -14,11 +14,11 @@ class LeaderboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $results = Leaderboard::all();
-        return $results;
-    }
+   public function index()
+{
+    $leaderboards = Leaderboard::with('user')->orderByDesc('points')->get();
+    return LeaderboardResource::collection($leaderboards);
+}
 
     /**
      * Show the form for creating a new resource.
@@ -65,10 +65,11 @@ class LeaderboardController extends Controller
 
     public function show(Leaderboard $leaderboard)
 {
+    $leaderboard->load('user'); // Učitava korisnika povezanog sa leaderboardomSS
     return new LeaderboardResource($leaderboard);
 }
 
-    /**
+    /*
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Leaderboard  $leaderboard
