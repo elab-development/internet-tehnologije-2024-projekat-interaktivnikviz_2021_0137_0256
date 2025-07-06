@@ -7,33 +7,37 @@ import { Link } from 'react-router-dom';function QuestionList() {
     const [isAdmin, setIsAdmin] = useState(false);
 
  
- 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        axios.get(`http://127.0.0.1:8000/api/questions`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            
-            .then(response => {
-                setQuestions(response.data.data);
-               
-            })
-            .catch(error => {
-                setError('Failed to fetch questions');
-            });
-            if (token) {
-                axios.get('http://127.0.0.1:8000/api/admin/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                .then(() => setIsAdmin(true))
-                .catch(() => setIsAdmin(false));
-            }
-    }, []);
- 
+ useEffect(() => {
+  const token = localStorage.getItem('token');
+
+  axios.get('http://127.0.0.1:8000/api/questions', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+       Accept: 'application/json',
+    },
+  })
+    .then(response => {
+      setQuestions(response.data.data);
+    })
+    .catch(error => {
+      setError('Failed to fetch questions');
+    });
+
+  if (token) {
+    axios.get('http://127.0.0.1:8000/api/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    })
+      .then(res => {
+        const user = res.data;
+        setIsAdmin(user.role === 'admin');
+      })
+      .catch(() => setIsAdmin(false));
+  }
+}, []);
+
     return (
         <div className={styles.questionListContainer}>
             <h2>Questions</h2>

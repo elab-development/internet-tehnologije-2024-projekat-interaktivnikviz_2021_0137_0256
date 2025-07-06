@@ -1,0 +1,17 @@
+.leaderboard {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: auto;
+}
+
+.leaderboard ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.leaderboard li {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}

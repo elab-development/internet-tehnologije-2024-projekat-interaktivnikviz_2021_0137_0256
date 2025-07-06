@@ -13,6 +13,7 @@ import QuestionList from './components/QuestionList/QuestionList'; // Importujem
 import QuestionDetails from './components/QuestionDetails/QuestionDetails'; // Importujemo QuestionDetails komponentu
 import Dashboard from './components/Dashboard/Dashboard'; // Importujemo Dashboard komponentu
 import AdminRoute from './components/AdminRoute/AdminRoute'; // Importujemo AdminRoute komponentu
+import Leaderboard from './components/Leaderboard/Leaderboard'; // importuj komponentu
 
 function App() {
   const [authChanged, setAuthChanged] = useState(false);
@@ -28,7 +29,11 @@ function App() {
         <Route path="/questions" element={<QuestionList />} />
   
         {/* ZAŠTIĆENE RUTE */}
-        
+               <Route path="/leaderboards" element={
+              <PrivateRoute>
+            <Leaderboard />
+            </PrivateRoute>
+} />
   
         {/* ADMIN ZAŠTIĆENE RUTE */}
 
@@ -43,6 +48,8 @@ function App() {
             <Dashboard />
           </AdminRoute>
         } />
+ 
+
       </Routes>
     </Router>
   );
