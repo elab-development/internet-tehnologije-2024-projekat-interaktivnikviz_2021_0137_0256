@@ -9,35 +9,33 @@ const Leaderboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    // Dohvatanje leaderboarda
-    axios.get('http://127.0.0.1:8000/api/leaderboards', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
-        }
-    )
-      .then(response => {
-        setLeaders(response.data.data);
-        console.log('Fetched leaders:', response.data.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError('Greška prilikom učitavanja leaderboarda');
-        setLoading(false);
-      });
-
-    // Provera da li je admin
-    axios.get('http://127.0.0.1:8000/api/admin/profile', {
-          headers: {
-              Authorization: `Bearer ${token}`,
-          }
+  axios.get('http://127.0.0.1:8000/api/profile', {
+    headers: { Authorization: `Bearer ${token}` }
   })
-    .then(() => setIsAdmin(true))
-    .catch(() => setIsAdmin(false));
-  }, []);
+    .then(response => {
+      const isAdmin = response.data.is_admin;
+      setIsAdmin(isAdmin);
+    })
+    .catch(() => setIsAdmin(false)); // fallback
+
+  axios.get('http://127.0.0.1:8000/api/leaderboards', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  })
+    .then(response => {
+      setLeaders(response.data.data);
+      setLoading(false);
+    })
+    .catch(error => {
+      setError('Greška prilikom učitavanja leaderboarda');
+      setLoading(false);
+    });
+}, []);
+
   
 
   if (loading) return <p>Učitavanje...</p>;
@@ -72,7 +70,7 @@ const Leaderboard = () => {
       <h2>Leaderboard</h2>
       <ul>
         {leaders.map((entry, index) => (
-          <li key={entry.user_id}>
+          <li key={entry.id}>
             {index + 1}. {entry.user?.username || 'Nepoznat'} - {entry.points} poena
           </li>
         ))}

@@ -14,6 +14,7 @@ import QuestionDetails from './components/QuestionDetails/QuestionDetails'; // I
 import Dashboard from './components/Dashboard/Dashboard'; // Importujemo Dashboard komponentu
 import AdminRoute from './components/AdminRoute/AdminRoute'; // Importujemo AdminRoute komponentu
 import Leaderboard from './components/Leaderboard/Leaderboard'; // importuj komponentu
+import Profile from './components/Profile/Profile'; // Importujemo Profile komponentu
 
 function App() {
   const [authChanged, setAuthChanged] = useState(false);
@@ -27,7 +28,8 @@ function App() {
   
         {/* JAVNA RUTA */}
         <Route path="/questions" element={<QuestionList />} />
-  
+  <Route path="/profile" element={<Profile />} />
+
         {/* ZAŠTIĆENE RUTE */}
                <Route path="/leaderboards" element={
               <PrivateRoute>

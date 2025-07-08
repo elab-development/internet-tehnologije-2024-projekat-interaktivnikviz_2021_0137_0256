@@ -42,19 +42,20 @@ import styles from './NavBar.module.css'; // CSS module for scoped styles
    return (
   <nav className={styles.navbar}>
     <ul className={styles.navLinks}>
-        <li>
-            <Link to="/questions">Questions</Link>
-          </li>
+        
       {isLoggedIn && (
         <>
           <li>
             <Link to="/leaderboards">Leaderboard</Link>
           </li>
+          <li><Link to="/profile">Profile</Link></li>
 
           {isAdmin && (
-            <li>
-              <Link to="/dashboard">Admin Dashboard</Link>
-            </li>
+            <><li>
+                 <Link to="/dashboard">Admin Dashboard</Link>
+               </li><li>
+                   <Link to="/questions">Questions</Link>
+                 </li></>
           )}
         </>
       )}
