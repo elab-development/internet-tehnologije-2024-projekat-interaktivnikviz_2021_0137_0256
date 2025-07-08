@@ -36,5 +36,9 @@ class LeaderboardSeeder extends Seeder
             'user_id' => 4, // ID korisnika
             'points' => 2000, // Broj poena
         ]);
+         Leaderboard::create([
+            'user_id' => 5, // ID korisnika
+            'points' => 4000, // Broj poena
+        ]);
     }
 }

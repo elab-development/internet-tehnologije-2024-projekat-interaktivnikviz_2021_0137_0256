@@ -8,7 +8,8 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\LeaderboardExportController;
-
+use App\Models\Leaderboard;
+use App\Http\Resources\LeaderboardResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +30,26 @@ Route::resource('questions', QuestionController::class)->only(['show', 'index'])
 // --- KORISNIČKE RUTE (Rute za koje je potrebna autentifikacija) ---
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', function(Request $request) {
-        return auth()->user();
-    });
+    $user = auth()->user();
+    $leaderboard = \App\Models\Leaderboard::where('user_id', $user->id)->first();
+
+    return response()->json([
+        'id' => $user->id,
+        'username' => $user->username,
+        'email' => $user->email,
+        'points' => $leaderboard->points ?? 0,
+        'avatar' => $user->avatar,
+        'is_admin' => $user->role === 'admin',
+    ]);
+});
+//ruta za preuzimanje korisničkog profilai pamcenje avatara
+Route::post('/profile/avatar', function(Request $request) {
+    $user = auth()->user();
+    $user->avatar = $request->avatar;
+    $user->save();
+    return response()->json(['message' => 'Avatar updated']);
+});
+
 
     //Resursne rute za korisnike
     Route::resource('question_categories', QuestionCategoryController::class)->only(['show', 'index']);

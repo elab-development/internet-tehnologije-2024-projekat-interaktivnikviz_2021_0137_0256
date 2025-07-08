@@ -44,5 +44,11 @@ class UserSeeder extends Seeder
             'password' => Hash::make('player456'),
             // 'role' nije prosleđen, koristi podrazumevanu vrednost (IGRAC)
         ]);
+        User::create([
+            'username' => 'Tica ',
+            'email' => 'tica@example.com',
+            'password' => Hash::make('tica123'),
+            // 'role' nije prosleđen, koristi podrazumevanu vrednost (IGRAC)
+        ]);
     }
 }

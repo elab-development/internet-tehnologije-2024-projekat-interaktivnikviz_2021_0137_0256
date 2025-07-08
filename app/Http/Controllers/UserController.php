@@ -144,4 +144,17 @@ class UserController extends Controller
          }
      }
      
+ public function profile(Request $request)
+    {
+        $user = $request->user();
+
+        $leaderboard = $user->leaderboard; // assuming relation is defined
+
+        return response()->json([
+            'username' => $user->username,
+            'email' => $user->email,
+            'points' => $leaderboard?->points ?? 0,
+        ]);
+    }
+    
 }
