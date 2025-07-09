@@ -37,11 +37,11 @@ const Profile = () => {
   return (
     <div className={styles.profileContainer}>
       <div className={styles.avatarWrapper}>
-        <img
-          src={`/avatars/${profile.avatar || 'default.jpg'}`}
-          alt="Avatar"
-          className={styles.avatar}
-        />
+       <img
+  src={profile.avatar ? `/avatars/${profile.avatar}` : '/avatars/default.jpg'}
+  alt="Avatar"
+  className={styles.avatar}
+/>
         <button onClick={() => setIsModalOpen(true)} className={styles.avatarBtn}>
           Promeni avatar
         </button>

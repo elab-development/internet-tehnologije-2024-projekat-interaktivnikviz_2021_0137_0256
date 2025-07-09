@@ -9,23 +9,25 @@ const Leaderboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-  const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-  axios.get('http://127.0.0.1:8000/api/profile', {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+    // Provera da li je admin
+    axios.get('http://127.0.0.1:8000/api/profile', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     .then(response => {
       const isAdmin = response.data.is_admin;
       setIsAdmin(isAdmin);
     })
-    .catch(() => setIsAdmin(false)); // fallback
+    .catch(() => setIsAdmin(false));
 
-  axios.get('http://127.0.0.1:8000/api/leaderboards', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Accept': 'application/json'
-    }
-  })
+    // Dohvatanje leaderboarda
+    axios.get('http://127.0.0.1:8000/api/leaderboards', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    })
     .then(response => {
       setLeaders(response.data.data);
       setLoading(false);
@@ -34,14 +36,8 @@ const Leaderboard = () => {
       setError('Greška prilikom učitavanja leaderboarda');
       setLoading(false);
     });
-}, []);
+  }, []);
 
-  
-
-  if (loading) return <p>Učitavanje...</p>;
-  if (error) return <p>{error}</p>;
-
-  // Ova funkcija će se pozvati kada korisnik klikne na dugme za eksportovanje
   const handleExport = () => {
     const token = localStorage.getItem('token');
     axios.get('http://127.0.0.1:8000/api/leaderboards-export', {
@@ -49,7 +45,7 @@ const Leaderboard = () => {
         Authorization: `Bearer ${token}`,
         'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       },
-      responseType: 'blob' // Ovaj deo je važan za preuzimanje datoteke jer nam govori da očekujemo binarni odgovor
+      responseType: 'blob'
     })
     .then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -63,24 +59,46 @@ const Leaderboard = () => {
       console.error('Greška prilikom eksportovanja:', err);
       alert('Nešto nije u redu prilikom eksportovanja.');
     });
-  };  
+  };
+
+  if (loading) return <p>Učitavanje...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className={styles.leaderboard}>
       <h2>Leaderboard</h2>
       <ul>
-        {leaders.map((entry, index) => (
-          <li key={entry.id}>
-            {index + 1}. {entry.user?.username || 'Nepoznat'} - {entry.points} poena
-          </li>
-        ))}
+        {leaders.map((entry, index) => {
+          const rankClass =
+            index === 0
+              ? styles.gold
+              : index === 1
+              ? styles.silver
+              : index === 2
+              ? styles.bronze
+              : '';
+
+          return (
+            <li key={entry.id} className={`${styles.leaderItem} ${rankClass}`}>
+              <span className={styles.rank}>{index + 1}.</span>
+              <img
+                src={`/avatars/${entry.user?.avatar || 'default.jpg'}`}
+                alt="avatar"
+                className={styles.leaderAvatar}
+              />
+              <span className={styles.username}>
+                {entry.user?.username || 'Nepoznat'} - {entry.points} poena
+              </span>
+            </li>
+          );
+        })}
       </ul>
+
       {isAdmin && (
         <button onClick={handleExport} className={styles.exportButton}>
-            Exportuj u Excel
+          Exportuj u Excel
         </button>
       )}
-
     </div>
   );
 };

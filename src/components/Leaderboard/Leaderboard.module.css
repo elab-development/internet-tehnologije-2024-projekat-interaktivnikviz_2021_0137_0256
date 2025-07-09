@@ -1,36 +1,53 @@
 .leaderboard {
-  background-color: #f0f0f0;
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 400px;
-  margin: auto;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.leaderboard h2 {
+  font-size: 2rem;
+  color: #222;
+  margin-bottom: 1.5rem;
 }
 
 .leaderboard ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0 auto 2rem;
+  max-width: 500px;
+  text-align: left;
 }
 
 .leaderboard li {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1.1rem;
+  color: #333;
 }
 
 .exportButton {
-  margin-top: 1.5rem;
-  padding: 0.6rem 1.2rem;
-  background-color: #28a745;
+  padding: 0.7rem 1.5rem;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .exportButton:hover {
-  background-color: #218838;
+  background-color: #0056b3;
 }
+
 .loading {
   text-align: center;
   font-size: 1.2rem;
@@ -43,3 +60,50 @@
   margin-top: 2rem;
   font-weight: bold;
 }
+
+.gold {
+  background-color: #ffd700 !important; /* zlatna */
+  font-weight: bold;
+}
+
+.silver {
+  background-color: #c0c0c0 !important; /* srebrna */
+  font-weight: bold;
+}
+
+.bronze {
+  background-color: #cd7f32 !important; /* bronzana */
+  font-weight: bold;
+}
+.leaderItem {
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1.1rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rank {
+  font-weight: bold;
+  min-width: 30px;
+  text-align: right;
+}
+
+.leaderAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+}
+
+.username {
+  flex-grow: 1;
+}
+
+
