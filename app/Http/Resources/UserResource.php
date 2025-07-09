@@ -13,7 +13,8 @@ class UserResource extends JsonResource
             'id' => $this->resource->id,
             'username' => $this->resource->username,
             'email' => $this->resource->email,
-            'role' => $this->resource->role
+            'role' => $this->resource->role,
+            'avatar'=> $this->resource->avatar ?? 'default.jpg',
         ];
     }
 
