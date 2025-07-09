@@ -32,7 +32,7 @@ import { Link } from 'react-router-dom';function QuestionList() {
     })
       .then(res => {
         const user = res.data;
-        setIsAdmin(user.role === 'admin');
+        setIsAdmin(user.is_admin);
       })
       .catch(() => setIsAdmin(false));
   }

@@ -78,13 +78,18 @@ const Leaderboard = () => {
               ? styles.bronze
               : '';
 
+              const avatarName = entry.user?.avatar && entry.user.avatar.includes('.') 
+                ? entry.user.avatar 
+                : 'default.png';
+
+
           return (
             <li key={entry.id} className={`${styles.leaderItem} ${rankClass}`}>
               <span className={styles.rank}>{index + 1}.</span>
               <img
-                src={`/avatars/${entry.user?.avatar || 'default.jpg'}`}
-                alt="avatar"
-                className={styles.leaderAvatar}
+                  src={`/avatars/${avatarName}`}
+                  alt="avatar"
+                  className={styles.leaderAvatar}
               />
               <span className={styles.username}>
                 {entry.user?.username || 'Nepoznat'} - {entry.points} poena

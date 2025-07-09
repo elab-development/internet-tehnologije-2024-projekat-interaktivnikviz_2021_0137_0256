@@ -14,7 +14,10 @@ const Profile = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     })
-    .then(res => setProfile(res.data))
+    .then(res => {
+      console.log('Profil podaci:', res.data); // <- PROVERI ŠTA PIŠE OVDE
+      setProfile(res.data);
+    })
     .catch(() => setError("Došlo je do greške pri učitavanju profila"));
   }, []);
 
@@ -38,7 +41,9 @@ const Profile = () => {
     <div className={styles.profileContainer}>
       <div className={styles.avatarWrapper}>
        <img
-  src={profile.avatar ? `/avatars/${profile.avatar}` : '/avatars/default.jpg'}
+  src={profile.avatar && profile.avatar !== 'null' && profile.avatar !== '' 
+    ? `/avatars/${profile.avatar}` 
+    : '/avatars/default.png'}
   alt="Avatar"
   className={styles.avatar}
 />

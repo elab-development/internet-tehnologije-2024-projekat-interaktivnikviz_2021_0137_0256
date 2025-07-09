@@ -2,7 +2,7 @@
 import React from 'react';
 import styles from './AvatarModal.module.css';
 
-const avatars = Array.from({ length: 9 }, (_, i) => `avatar${i + 1}.jpg`);
+const avatars = Array.from({ length: 9 }, (_, i) => `avatar${i + 1}.png`);
 
 const AvatarModal = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;

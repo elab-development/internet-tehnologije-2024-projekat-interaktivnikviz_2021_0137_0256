@@ -23,7 +23,7 @@ import styles from './NavBar.module.css'; // CSS module for scoped styles
   })
   .then(res => {
     const user = res.data;
-    setIsAdmin(user.role === 'admin'); // postavi true samo ako je admin
+    setIsAdmin(user.is_admin); // postavi true samo ako je admin
   })
   .catch(() => setIsAdmin(false));
 } else {
@@ -38,7 +38,7 @@ import styles from './NavBar.module.css'; // CSS module for scoped styles
         navigate('/login');
         window.location.reload(); // Reload stranice da bi se osvežili podaci
     };
- 
+  
    return (
   <nav className={styles.navbar}>
     <ul className={styles.navLinks}>
