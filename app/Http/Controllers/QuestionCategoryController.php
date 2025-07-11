@@ -14,8 +14,8 @@ class QuestionCategoryController extends Controller
      */
     public function index()
     {
-        $question_categories = QuestionCategory::all();
-        return $question_categories;
+        $categories = QuestionCategory::all();
+        return response()->json($categories);
     }
 
     /**

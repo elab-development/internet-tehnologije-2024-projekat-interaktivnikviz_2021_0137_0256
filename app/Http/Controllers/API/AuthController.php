@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
+use App\Http\Controllers\LeaderboardController;
 
 
 class AuthController extends Controller
@@ -31,6 +32,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'role'=>'player',//default vrednost nam je player,a admini se rucno dodaju
         ]);
+
+        $leaderboardController = new LeaderboardController();
+        $leaderboardController->store($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

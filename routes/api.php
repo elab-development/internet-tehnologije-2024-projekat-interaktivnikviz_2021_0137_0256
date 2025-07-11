@@ -76,6 +76,8 @@ Route::group(['middleware' => ['auth:sanctum','admin']], function () {
     //Resursne rute za Administratora
     Route::resource('users', UserController::class);
     Route::resource('leaderboards', LeaderboardController::class)->except(['index', 'show']);
+    Route::resource('questions', QuestionController::class)->except(['index', 'show']);
+    Route::resource('question_categories', QuestionCategoryController::class)->except(['index', 'show']);
     
     //Rute za brisanje
     Route::delete('/questions/{question}/delete', [QuestionController::class, 'destroy'])->name('questions.delete');

@@ -16,7 +16,7 @@ class QuestionResource extends JsonResource
             'category'=>$this->resource->category,
             // Umesto cele category vraćamo samo naziv
         'category_name' => $this->resource->category ? $this->resource->category->name : null,
-		 'options'=>$this->resource->options,
+		 'options' => json_decode($this->options),
             'answer' => $this->resource->answer,
             'points' => $this->resource->points
         ];
