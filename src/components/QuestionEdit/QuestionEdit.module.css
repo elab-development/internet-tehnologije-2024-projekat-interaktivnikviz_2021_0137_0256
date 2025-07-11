@@ -1,0 +1,67 @@
+.editContainer {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .editContainer h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #343a40;
+  }
+  
+  .editContainer label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: #495057;
+  }
+  
+  .editContainer input,
+  .editContainer select,
+  .editContainer textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: white;
+  }
+  
+  .editContainer textarea {
+    resize: vertical;
+  }
+  
+  .editContainer button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .editContainer button:hover {
+    background-color: #0056b3;
+  }
+  
+  .successMessage {
+    color: green;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .errorMessage {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  

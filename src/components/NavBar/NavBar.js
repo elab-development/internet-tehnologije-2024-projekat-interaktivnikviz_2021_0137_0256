@@ -60,6 +60,12 @@ import styles from './NavBar.module.css'; // CSS module for scoped styles
         </>
       )}
 
+      {!isLoggedIn && (
+        <li>
+          <Link to="/register">Register</Link>
+        </li>
+      )}
+
       <li>
         {isLoggedIn ? (
           <button onClick={handleLogout} className={styles.logoutButton}>

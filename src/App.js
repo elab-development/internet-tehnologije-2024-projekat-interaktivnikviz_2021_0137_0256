@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/login/login';
 import NavBar from './components/NavBar/NavBar';
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom'; // Importujemo Navigate za preusmeravanje
 
 
 import PrivateRoute from './PrivateRoute'; // Importujemo PrivateRoute komponentu
@@ -15,16 +16,42 @@ import Dashboard from './components/Dashboard/Dashboard'; // Importujemo Dashboa
 import AdminRoute from './components/AdminRoute/AdminRoute'; // Importujemo AdminRoute komponentu
 import Leaderboard from './components/Leaderboard/Leaderboard'; // importuj komponentu
 import Profile from './components/Profile/Profile'; // Importujemo Profile komponentu
+import Register from './components/Register/Register'; // Importujemo Register komponentu
+import QuestionEdit from './components/QuestionEdit/QuestionEdit'; // Importujemo QuestionEdit komponentu
+
 
 function App() {
   const [authChanged, setAuthChanged] = useState(false);
-  <NavBar authChanged={authChanged} />
+  
+
+  const GuestRoute = ({ children }) => {
+    const isLoggedIn = Boolean(localStorage.getItem('token')); // ili kako ti proveravaš login
+  
+    if (isLoggedIn) {
+      // Ako je korisnik ulogovan, preusmeri ga na dashboard ili profil
+      return <Navigate to="/profile" replace />;
+    }
+  
+    // Ako nije ulogovan, prikazi komponentu (npr. Register)
+    return children;
+  };
 
   return (
     <Router>
+      <Routes>
+      <Route path="/" element={
+        <Navigate to={localStorage.getItem('token') ? "/profile" : "/login"} replace />
+      } />
+      </Routes>
       <NavBar />
       <Routes>
         <Route path="/login" element={<Login />} />
+
+        <Route path="/register" element={
+          <GuestRoute>
+            <Register />
+          </GuestRoute>
+        } />
   
         {/* JAVNA RUTA */}
         <Route path="/questions" element={<QuestionList />} />
@@ -43,6 +70,12 @@ function App() {
           <AdminRoute>
             <QuestionDetails />
           </AdminRoute>
+        } />
+
+        <Route path="/questions/edit/:id" element={
+        <AdminRoute>
+          <QuestionEdit />
+        </AdminRoute>
         } />
 
         <Route path="/dashboard" element={

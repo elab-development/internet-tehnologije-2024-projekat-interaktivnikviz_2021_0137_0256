@@ -50,9 +50,14 @@ import { Link } from 'react-router-dom';function QuestionList() {
                      
                         
                         {isAdmin && (
-                            <Link to={`/questions/${question.id}`} className={styles.readMoreButton}>
+                          <>
+                            <Link to={`/questions/${question.id}`} className={styles.Button}>
                             Read More
                             </Link>
+                            <Link to={`/questions/edit/${question.id}`} className={styles.Button}>
+                              Edit
+                            </Link>
+                          </>
                         )}
 
                     </div>
