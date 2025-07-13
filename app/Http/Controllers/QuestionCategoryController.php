@@ -167,14 +167,15 @@ class QuestionCategoryController extends Controller
         return view('categories.delete', compact('questionCategory'));
     }
 
-    public function destroy(QuestionCategory $questionCategory)
-    {
-        try {
-            $questionCategory->delete();
-            
-            return redirect()->route('question_categories.index')->with('success', 'Question category deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('question_categories.index')->with('error', 'Failed to delete question category.');
-        }
+   public function destroy(QuestionCategory $questionCategory)
+{
+    try {
+        $questionCategory->delete();
+
+        return response()->json(['message' => 'Kategorija uspešno obrisana.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Greška pri brisanju kategorije.'], 500);
     }
+}
+
 }

@@ -224,10 +224,17 @@ public function destroy(Question $question)
 {
     try {
         $question->delete();
-        
-        return redirect()->route('questions.index')->with('success', 'Question deleted successfully.');
+
+        return response()->json([
+            'message' => 'Pitanje uspešno obrisano.'
+        ], 200);
+
     } catch (\Exception $e) {
-        return redirect()->route('questions.index')->with('error', 'Failed to delete question.');
+        return response()->json([
+            'message' => 'Greška prilikom brisanja pitanja.',
+            'error' => $e->getMessage()
+        ], 500);
     }
-} 
+}
+
 }
