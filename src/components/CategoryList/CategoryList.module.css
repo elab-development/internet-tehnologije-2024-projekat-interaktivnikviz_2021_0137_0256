@@ -1,0 +1,162 @@
+.categoryListContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.categoryItem {
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: box-shadow 0.2s ease;
+}
+
+.categoryItem:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.categoryItem h3 {
+  margin: 0 0 1rem 0;
+  color: #222;
+}
+
+.categoryItem p {
+  margin: 0.5rem 0;
+  color: #444;
+}
+.fabButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  font-size: 2rem;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 100;
+  transition: opacity 0.3s ease;
+
+  /* Centriraj znak + */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.fabDimmed {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.buttonGroup {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.Button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.Button:hover {
+  background-color: #0056b3;
+}
+
+.DeleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.DeleteButton:hover {
+  background-color: #b52a37;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modalButtons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.confirmButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirmButton:hover {
+  background-color: #b52a3a;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}

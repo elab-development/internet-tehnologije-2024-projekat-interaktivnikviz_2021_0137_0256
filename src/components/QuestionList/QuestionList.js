@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';function QuestionList() {
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [questionToDelete, setQuestionToDelete] = useState(null);
 
  
  useEffect(() => {
@@ -38,6 +40,33 @@ import { Link } from 'react-router-dom';function QuestionList() {
   }
 }, []);
 
+const handleDelete = (id) => {
+  setQuestionToDelete(id);
+  setShowDeleteModal(true);
+};
+
+const confirmDelete = () => {
+  const token = localStorage.getItem('token');
+
+  axios.delete(`http://127.0.0.1:8000/api/questions/${questionToDelete}/delete`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    }
+  })
+  .then(() => {
+    setQuestions(prev => prev.filter(q => q.id !== questionToDelete));
+    setShowDeleteModal(false);
+    setQuestionToDelete(null);
+  })
+  .catch(() => {
+    alert("Došlo je do greške prilikom brisanja.");
+    setShowDeleteModal(false);
+    setQuestionToDelete(null);
+  });
+};
+
+
     return (
         <div className={styles.questionListContainer}>
             <h2>Questions</h2>
@@ -57,6 +86,30 @@ import { Link } from 'react-router-dom';function QuestionList() {
                             <Link to={`/questions/edit/${question.id}`} className={styles.Button}>
                               Edit
                             </Link>
+                            <button
+      className={styles.DeleteButton}
+      onClick={() => handleDelete(question.id)}
+    >
+      Obriši
+    </button>
+    {showDeleteModal && (
+  <div className={styles.modalOverlay}>
+    <div className={styles.modalContent}>
+      <p>Da li ste sigurni da želite da obrišete ovo pitanje?</p>
+      <div className={styles.modalButtons}>
+        <button onClick={confirmDelete} className={styles.confirmButton}>Obriši</button>
+        <button onClick={() => setShowDeleteModal(false)} className={styles.cancelButton}>Otkaži</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+ <Link
+    to="/questions/create"
+    className={`${styles.fabButton} ${showDeleteModal ? styles.fabDimmed : ''}`}
+  >+</Link>
+  
                           </>
                         )}
 

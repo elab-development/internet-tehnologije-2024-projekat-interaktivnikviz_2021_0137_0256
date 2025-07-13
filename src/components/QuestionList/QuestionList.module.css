@@ -70,3 +70,116 @@ h2 {
 .Button:hover {
   background-color: #0056b3;
 }
+.floatingAddButton {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 2.5rem;
+  text-align: center;
+  line-height: 60px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+.floatingAddButton:hover {
+  background-color: #0056b3;
+}
+.DeleteButton {
+  margin-left: 0.5px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.DeleteButton:hover {
+  background-color: #b52a37;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modalButtons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.confirmButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  margin-left: 3rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  margin-right: 3rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.fabButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  font-size: 2rem;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 100;
+  transition: opacity 0.3s ease;
+
+  /* Centriranje sadržaja */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+
+.fabDimmed {
+  opacity: 0.3;
+  pointer-events: none;
+}

@@ -18,6 +18,10 @@ import Leaderboard from './components/Leaderboard/Leaderboard'; // importuj komp
 import Profile from './components/Profile/Profile'; // Importujemo Profile komponentu
 import Register from './components/Register/Register'; // Importujemo Register komponentu
 import QuestionEdit from './components/QuestionEdit/QuestionEdit'; // Importujemo QuestionEdit komponentu
+import QuestionCreate from './components/QuestionCreate/QuestionCreate'; // Importujemo QuestionCreate komponentu
+import CategoryCreate from './components/CategoryCreate/CategoryCreate';
+import CategoryList from './components/CategoryList/CategoryList';
+import CategoryEdit from './components/CategoryEdit/CategoryEdit'; // Importujemo CategoryEdit komponentu
 
 
 function App() {
@@ -83,7 +87,10 @@ function App() {
             <Dashboard />
           </AdminRoute>
         } />
- 
+ <Route path="/questions/create" element={<AdminRoute><QuestionCreate /></AdminRoute>} />
+<Route path="/categories/create" element={<AdminRoute><CategoryCreate /></AdminRoute>} />
+<Route path="/categories" element={<AdminRoute><CategoryList /></AdminRoute>} />
+<Route path="/categories/edit/:id" element={<AdminRoute><CategoryEdit /></AdminRoute>} />
 
       </Routes>
     </Router>
