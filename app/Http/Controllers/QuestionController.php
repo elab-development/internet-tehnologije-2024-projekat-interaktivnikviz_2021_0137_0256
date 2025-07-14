@@ -16,11 +16,27 @@ class QuestionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $questions = Question::with('category')->get();
-    return QuestionResource::collection($questions);
+    public function index(Request $request)
+{
+    $query = Question::with('category');
+
+    // Filter po kategoriji (id)
+    if ($request->has('category_id') && $request->category_id != '') {
+        $query->where('category_id', $request->category_id);
     }
+
+    // Filter po minimalnim i maksimalnim poenima
+    if ($request->has('min_points')) {
+        $query->where('points', '>=', (int)$request->min_points);
+    }
+    if ($request->has('max_points')) {
+        $query->where('points', '<=', (int)$request->max_points);
+    }
+
+    $questions = $query->paginate(15);
+
+    return QuestionResource::collection($questions);
+}
 
     /**
      * Show the form for creating a new resource.
