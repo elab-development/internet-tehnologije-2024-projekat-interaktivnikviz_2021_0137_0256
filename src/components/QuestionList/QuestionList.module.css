@@ -17,6 +17,42 @@ h2 {
   margin-bottom: 1rem;
 }
 
+/* Filteri */
+.questionListContainer > div:first-of-type {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.questionListContainer label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.questionListContainer select,
+.questionListContainer input[type="number"] {
+  margin-top: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 140px;
+  transition: border-color 0.2s ease;
+}
+
+.questionListContainer select:focus,
+.questionListContainer input[type="number"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Lista pitanja */
 .questionList {
   display: flex;
   flex-direction: column;
@@ -55,6 +91,7 @@ h2 {
   color: #333;
 }
 
+/* Dugmad */
 .Button {
   display: inline-block;
   margin-top: 1rem;
@@ -65,32 +102,13 @@ h2 {
   text-decoration: none;
   border-radius: 5px;
   transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .Button:hover {
   background-color: #0056b3;
 }
-.floatingAddButton {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 50%;
-  font-size: 2.5rem;
-  text-align: center;
-  line-height: 60px;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  transition: background-color 0.3s ease;
-}
 
-.floatingAddButton:hover {
-  background-color: #0056b3;
-}
 .DeleteButton {
   margin-left: 0.5px;
   background-color: #dc3545;
@@ -106,6 +124,7 @@ h2 {
   background-color: #b52a37;
 }
 
+/* Modal */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -155,6 +174,7 @@ h2 {
   cursor: pointer;
 }
 
+/* Floating add button */
 .fabButton {
   position: fixed;
   bottom: 20px;
@@ -171,13 +191,12 @@ h2 {
   z-index: 100;
   transition: opacity 0.3s ease;
 
-  /* Centriranje sadržaja */
+  /* Center content */
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
 }
-
 
 .fabDimmed {
   opacity: 0.3;
