@@ -156,5 +156,39 @@ class UserController extends Controller
             'points' => $leaderboard?->points ?? 0,
         ]);
     }
+
+public function updateUsername(Request $request)
+    {
+    $user = $request->user();
+
+    $validated = $request->validate([
+        'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+    ]);
+
+    $user->username = $validated['username'];
+    $user->save();
+
+    return response()->json(['username' => $user->username]);
+    }
+
+public function updatePassword(Request $request)
+    {
+    $user = $request->user();
+
+    $request->validate([
+        'current_password' => 'required|string',
+        'new_password' => 'required|string|min:6|confirmed',
+    ]);
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return response()->json(['message' => 'Trenutna šifra nije tačna.'], 403);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return response()->json(['message' => 'Šifra uspešno promenjena.']);
+    }
+
     
 }

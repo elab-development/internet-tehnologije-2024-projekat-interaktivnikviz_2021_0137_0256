@@ -42,13 +42,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         'is_admin' => $user->role === 'admin',
     ]);
 });
-//ruta za preuzimanje korisničkog profilai pamcenje avatara
-Route::post('/profile/avatar', function(Request $request) {
-    $user = auth()->user();
-    $user->avatar = $request->avatar;
-    $user->save();
-    return response()->json(['message' => 'Avatar updated']);
-});
+    //Rute za izmenu korisničkog profila
+    Route::patch('/profile/update-username', [UserController::class, 'updateUsername']);
+    Route::patch('/profile/update-password', [UserController::class, 'updatePassword']);
+
+
+    //Ruta za preuzimanje korisničkog profilai pamcenje avatara
+    Route::post('/profile/avatar', function(Request $request) {
+        $user = auth()->user();
+        $user->avatar = $request->avatar;
+        $user->save();
+        return response()->json(['message' => 'Avatar updated']);
+    });
 
 
     //Resursne rute za korisnike
