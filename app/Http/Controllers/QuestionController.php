@@ -253,4 +253,12 @@ public function destroy(Question $question)
     }
 }
 
+public function randomQuestions()
+{
+    $questions = Question::inRandomOrder()->take(8)->with('category')->get();
+
+    return QuestionResource::collection($questions);
+}
+
+
 }

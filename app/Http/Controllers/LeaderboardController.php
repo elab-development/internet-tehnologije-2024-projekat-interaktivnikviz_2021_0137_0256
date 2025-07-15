@@ -36,16 +36,32 @@ class LeaderboardController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(User $user)
-    {
-    
-        $leaderboard = Leaderboard::create([
-            'user_id' => $user->id,
-            'points' => 0
-        ]);
-    
-        return $leaderboard;
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'points' => 'required|integer|min:0',
+    ]);
+
+    $user = auth()->user(); // koristi ulogovanog korisnika
+
+    $existing = Leaderboard::where('user_id', $user->id)->first();
+
+    if ($existing) {
+        if ($validated['points'] > $existing->points) {
+            $existing->points = $validated['points'];
+            $existing->save();
+        }
+        return new LeaderboardResource($existing);
     }
+
+    $leaderboard = Leaderboard::create([
+        'user_id' => $user->id,
+        'points' => $validated['points'],
+    ]);
+
+    return new LeaderboardResource($leaderboard);
+}
+
 
     /**
      * Display the specified resource.
