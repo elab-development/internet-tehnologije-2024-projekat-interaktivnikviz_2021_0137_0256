@@ -22,7 +22,7 @@ import QuestionCreate from './components/QuestionCreate/QuestionCreate'; // Impo
 import CategoryCreate from './components/CategoryCreate/CategoryCreate';
 import CategoryList from './components/CategoryList/CategoryList';
 import CategoryEdit from './components/CategoryEdit/CategoryEdit'; // Importujemo CategoryEdit komponentu
-
+import QuizPage from './components/QuizPage/QuizPage';
 
 function App() {
   const [authChanged, setAuthChanged] = useState(false);
@@ -46,6 +46,7 @@ function App() {
       <Route path="/" element={
         <Navigate to={localStorage.getItem('token') ? "/profile" : "/login"} replace />
       } />
+    
       </Routes>
       <NavBar />
       <Routes>
@@ -56,7 +57,7 @@ function App() {
             <Register />
           </GuestRoute>
         } />
-  
+    <Route path="/quiz" element={<QuizPage />} />
         {/* JAVNA RUTA */}
         <Route path="/questions" element={<QuestionList />} />
   <Route path="/profile" element={<Profile />} />

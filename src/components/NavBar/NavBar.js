@@ -39,6 +39,8 @@ function NavBar({ authChanged }) {
   return (
     <nav className={styles.navbar}>
       <ul className={styles.navLinks}>
+        <li><Link to="/quiz">Kviz</Link></li>
+
         {isLoggedIn && (
           <>
             <li><Link to="/leaderboards">Leaderboard</Link></li>
