@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\FetchQuestions;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,6 +14,11 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+
+     protected $commands = [
+        FetchQuestions::class,
+    ];
+
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
