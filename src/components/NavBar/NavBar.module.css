@@ -1,48 +1,55 @@
 .navbar {
-    background-color: #333;
- 
-    padding: 10px;
-    display: flex;
-    align-items: center;
-}
- 
-.navLinks {
-    width: 100%;
-    list-style: none;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-}
- 
-.navLinks li {
-    display: inline;
-}
- 
-.navLinks a {
-    color: white;
-    padding: 8px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-}
- 
-.navLinks a:hover {
-    background-color: #007bff;
-}
- 
-.logoutButton {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
- 
-.logoutButton:hover {
-    background-color: #0056b3;
+  background-color: #333;
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
+.navLinks {
+  width: 100%;
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.navLinks li {
+  display: inline;
+}
+
+/* Stil za sve linkove */
+.navLinks a {
+  background-color: #333;/* ili neka tvoja osnovna boja */
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover efekat: bela pozadina, tamni tekst */
+.navLinks a:hover {
+  background-color: white;
+  color: #333;
+}
+
+/* Logout dugme izgleda isto kao link */
+.logoutButton {
+ background-color: #333; /* ista boja kao linkovi */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover efekat za logout dugme */
+.logoutButton:hover {
+  background-color: white;
+  color: #333;
+}

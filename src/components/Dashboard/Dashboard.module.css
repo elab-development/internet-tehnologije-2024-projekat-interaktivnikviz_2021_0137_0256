@@ -1,56 +1,100 @@
-.dashboard-container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f7f7f7;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
- 
-h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-    font-weight: bold;
-}
- 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
- 
-th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
- 
-th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-    color: #333;
-}
- 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
- 
-tr:hover {
-    background-color: #f1f1f1;
-}
- 
-p {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-}
- 
-.error {
-    color: red;
-    font-size: 16px;
-    margin-top: 20px;
+.dashboardContainer {
+  max-width: 800px;
+  margin: 2rem auto;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  color: #222;
 }
 
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.userTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.8rem;
+  font-size: 1rem;
+}
+
+.userTable thead tr th {
+  text-align: left;
+  padding: 12px;
+  background-color: #f4f4f4;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #333;
+}
+
+.userTable tbody tr {
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.userTable tbody tr:hover {
+  background-color: #eaeaea;
+}
+
+.userTable tbody tr td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #ed0a21 !important;
+}
+
+.error {
+  color: red;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.noUsers {
+  text-align: center;
+  color: #555;
+  font-style: italic;
+}
+
+/* Loader container to center the spinner vertically and horizontally */
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+/* Simple circular spinner */
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

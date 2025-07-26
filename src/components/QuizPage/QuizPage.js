@@ -50,7 +50,7 @@ const QuizPage = () => {
 
     if (timeLeft === 0) {
       setIsCorrect(false);
-      setSelectedOption('timeout'); // označava da je vreme isteklo
+      setSelectedOption('timeout');
       setTimerRunning(false);
       setTimeout(() => {
         nextQuestion();
@@ -66,8 +66,7 @@ const QuizPage = () => {
   }, [timeLeft, timerRunning, selectedOption, showResult]);
 
   const handleAnswer = (option) => {
-    if (selectedOption) return; // spreči dupli klik
-
+    if (selectedOption) return;
     const correct = option === questions[currentIndex].answer;
     setIsCorrect(correct);
     setSelectedOption(option);
@@ -117,7 +116,7 @@ const QuizPage = () => {
     fetchQuestions();
   };
 
-  if (questions.length === 0) return <p>Učitavanje pitanja...</p>;
+  if (questions.length === 0) return <p className={styles.loading}>Učitavanje pitanja...</p>;
 
   return (
     <div className={styles.quizContainer}>
@@ -135,10 +134,9 @@ const QuizPage = () => {
       ) : (
         <>
           <h3>Pitanje {currentIndex + 1} od {questions.length}</h3>
-          <p><strong>{questions[currentIndex].question}</strong></p>
-          <p>Poeni: {questions[currentIndex].points}</p>
+          <p className={styles.question}><strong>{questions[currentIndex].question}</strong></p>
+          <p className={styles.points}>Poeni: {questions[currentIndex].points}</p>
 
-          {/* Tajmer i loading bar */}
           <div className={styles.timerBarWrapper}>
             <div
               className={styles.timerBar}
@@ -165,7 +163,7 @@ const QuizPage = () => {
                   key={index}
                   disabled={!!selectedOption}
                   onClick={() => handleAnswer(option)}
-                  className={buttonClass}
+                  className={`${styles.optionButton} ${buttonClass}`}
                 >
                   {option}
                 </button>

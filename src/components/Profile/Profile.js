@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './Profile.module.css';
 import AvatarModal from './AvatarModal';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const Loader = () => (
+  <div className={styles.loaderContainer}>
+    <div className={styles.loader}></div>
+  </div>
+);
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -33,9 +40,7 @@ const Profile = () => {
 
   const handleAvatarChange = (avatarName) => {
     axios.post('http://127.0.0.1:8000/api/profile/avatar', { avatar: avatarName }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => {
       setProfile(prev => ({ ...prev, avatar: avatarName }));
@@ -49,9 +54,7 @@ const Profile = () => {
     axios.patch('http://127.0.0.1:8000/api/profile/update-username', {
       username: newUsername
     }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => {
       setProfile(prev => ({ ...prev, username: newUsername }));
@@ -60,7 +63,7 @@ const Profile = () => {
     .catch(err => {
       if (err.response?.status === 422) {
         setUsernameError("Korisničko ime je zauzeto ili neispravno");
-        setNewUsername(profile.username); // Reset na staro
+        setNewUsername(profile.username);
       } else {
         alert("Greška prilikom promene imena");
       }
@@ -80,17 +83,13 @@ const Profile = () => {
       new_password: passwords.new,
       new_password_confirmation: passwords.confirm
     }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     .then(() => {
       alert("Šifra je uspešno promenjena");
       setPasswords({ current: '', new: '', confirm: '' });
     })
     .catch(err => {
-      console.log(err.response); // Log the error response for debugging
-    
       if (err.response?.status === 422) {
         setPasswordError("Nova šifra ne ispunjava uslove");
       } else if (err.response?.status === 403) {
@@ -101,20 +100,26 @@ const Profile = () => {
     });
   };
 
-  if (error) return <p>{error}</p>;
-  if (!profile) return <p>Učitavanje...</p>;
+  if (error) return <p className={styles.error}>{error}</p>;
+  if (!profile) return <Loader />;
 
   return (
-    <div className={styles.profileContainer}>
+    <motion.div
+      className={styles.container}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className={styles.avatarWrapper}>
         <img
-          src={profile.avatar && profile.avatar !== 'null' && profile.avatar !== '' 
-            ? `/avatars/${profile.avatar}` 
+          src={profile.avatar && profile.avatar !== 'null' && profile.avatar !== ''
+            ? `/avatars/${profile.avatar}`
             : '/avatars/default.png'}
           alt="Avatar"
           className={styles.avatar}
         />
-        <button onClick={() => setIsModalOpen(true)} className={styles.avatarBtn}>
+        <button onClick={() => setIsModalOpen(true)} className={styles.changeAvatarBtn}>
           Promeni avatar
         </button>
       </div>
@@ -124,46 +129,57 @@ const Profile = () => {
         onClose={() => setIsModalOpen(false)}
         onSelect={handleAvatarChange}
       />
-      <h4><strong>Username:</strong> {profile.username}</h4>
-      <h4><strong>Email:</strong> {profile.email}</h4>
-      <h4><strong>Poeni:</strong> {profile.points}</h4>
+
+      <div className={styles.infoSection}>
+        <h3>Informacije o korisniku</h3>
+        <p><strong>Korisničko ime:</strong> {profile.username}</p>
+        <p><strong>Email:</strong> {profile.email}</p>
+        <p><strong>Poeni:</strong> {profile.points}</p>
+      </div>
 
       <div className={styles.section}>
-        <label>Korisničko ime:</label>
+        <h3>Izmena korisničkog imena</h3>
         <input
           type="text"
           value={newUsername}
-          onChange={(e) => setNewUsername(e.target.value)}
+          onChange={e => setNewUsername(e.target.value)}
+          className={styles.input}
         />
-        <button onClick={handleUsernameChange}>Izmeni ime</button>
+        <button onClick={handleUsernameChange} className={styles.button}>
+          Sačuvaj izmene
+        </button>
         {usernameError && <p className={styles.error}>{usernameError}</p>}
       </div>
 
       <div className={styles.section}>
-        <label>Stara šifra:</label>
+        <h3>Promena šifre</h3>
         <input
           type="password"
+          placeholder="Stara šifra"
           value={passwords.current}
-          onChange={(e) => setPasswords(prev => ({ ...prev, current: e.target.value }))}
+          onChange={e => setPasswords(prev => ({ ...prev, current: e.target.value }))}
+          className={styles.input}
         />
-        <label>Nova šifra:</label>
         <input
           type="password"
+          placeholder="Nova šifra"
           value={passwords.new}
-          onChange={(e) => setPasswords(prev => ({ ...prev, new: e.target.value }))}
+          onChange={e => setPasswords(prev => ({ ...prev, new: e.target.value }))}
+          className={styles.input}
         />
-        <label>Potvrdi novu šifru:</label>
         <input
           type="password"
+          placeholder="Potvrdi novu šifru"
           value={passwords.confirm}
-          onChange={(e) => setPasswords(prev => ({ ...prev, confirm: e.target.value }))}
+          onChange={e => setPasswords(prev => ({ ...prev, confirm: e.target.value }))}
+          className={styles.input}
         />
-        <button onClick={handlePasswordChange}>Promeni šifru</button>
+        <button onClick={handlePasswordChange} className={styles.button}>
+          Promeni šifru
+        </button>
         {passwordError && <p className={styles.error}>{passwordError}</p>}
       </div>
-
-      
-    </div>
+    </motion.div>
   );
 };
 

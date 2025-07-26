@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './QuestionEdit.module.css';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function QuestionEdit() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ function QuestionEdit() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -26,29 +28,38 @@ function QuestionEdit() {
         Accept: 'application/json',
       },
     })
-    .then(res => {
-      const data = res.data;
-      const questionCategoryName = data.category_name;
+      .then(res => {
+        const data = res.data;
+        const questionCategoryName = data.category_name;
 
-      axios.get('http://127.0.0.1:8000/api/question_categories', {
-        headers: { Authorization: `Bearer ${token}` },
+        axios.get('http://127.0.0.1:8000/api/question_categories', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then(resCat => {
+            const categoriesList = resCat.data;
+            setCategories(categoriesList);
+
+            const matchedCategory = categoriesList.find(cat => cat.name === questionCategoryName);
+
+            setQuestionData({
+              category_id: matchedCategory ? matchedCategory.id : '',
+              question: data.question,
+              answer: data.answer,
+              points: data.points,
+            });
+
+            setOptions(
+              Array.isArray(data.options)
+                ? data.options
+                : JSON.parse(data.options)
+            );
+            setLoading(false);
+          });
       })
-      .then(resCat => {
-        const categoriesList = resCat.data;
-        setCategories(categoriesList);
-
-        const matchedCategory = categoriesList.find(cat => cat.name === questionCategoryName);
-
-        setQuestionData({
-          category_id: matchedCategory ? matchedCategory.id : '',
-          question: data.question,
-          answer: data.answer,
-          points: data.points,
-        });
-        setOptions(data.options && data.options.length === 4 ? data.options : ['', '', '', '']);
+      .catch(() => {
+        setError('Greška pri učitavanju podataka.');
+        setLoading(false);
       });
-    })
-    .catch(() => setError('Failed to fetch question.'));
   }, [id]);
 
   const handleChange = (e) => {
@@ -60,14 +71,9 @@ function QuestionEdit() {
     updated[index] = value;
     setOptions(updated);
 
-    // Ako trenutni odgovor odgovara staroj vrednosti, ažuriraj na novu
     if (questionData.answer === options[index]) {
       setQuestionData(prev => ({ ...prev, answer: value }));
     }
-  };
-
-  const handleSelectAnswer = (index) => {
-    setQuestionData({ ...questionData, answer: options[index] });
   };
 
   const handleSubmit = (e) => {
@@ -93,16 +99,24 @@ function QuestionEdit() {
         'Content-Type': 'application/json',
       },
     })
-    .then(() => {
-      setMessage('Pitanje uspešno izmenjeno.');
-      setError('');
-      setTimeout(() => navigate('/questions'), 1500);
-    })
-    .catch(err => {
-      const msg = err.response?.data?.message || 'Greška pri izmeni pitanja.';
-      setError(msg);
-    });
+      .then(() => {
+        setMessage('Pitanje uspešno izmenjeno.');
+        setError('');
+        setTimeout(() => navigate('/questions'), 1500);
+      })
+      .catch(err => {
+        const msg = err.response?.data?.message || 'Greška pri izmeni pitanja.';
+        setError(msg);
+      });
   };
+
+  if (loading) {
+    return (
+      <div className={styles.loaderWrapper}>
+        <CircularProgress color="primary" />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -126,27 +140,29 @@ function QuestionEdit() {
           value={questionData.question}
           onChange={handleChange}
         />
-<div className={styles.optionHeader}>
-  <label className={styles.optionLabel}>Opcije:</label>
-  <label className={styles.answerLabel}>Tačan odgovor:</label>
-</div>
-       {options.map((opt, idx) => (
-  <div key={idx} className={styles.optionRow}>
-    <input
-      type="text"
-      className={styles.optionInput}
-      value={opt}
-      onChange={(e) => handleOptionChange(idx, e.target.value)}
-    />
-    <input
-      type="radio"
-      name="correctAnswer"
-      checked={questionData.answer === opt}
-      onChange={() => setQuestionData(prev => ({ ...prev, answer: opt }))}
-      className={styles.optionRadio}
-    />
-  </div>
-))}
+
+        <div className={styles.optionHeader}>
+          <label className={styles.optionLabel}>Odgovor</label>
+          <label className={styles.answerLabel}>Tačan odgovor</label>
+        </div>
+
+        {options.map((opt, idx) => (
+          <div key={idx} className={styles.optionRow}>
+            <input
+              type="text"
+              className={styles.optionInput}
+              value={opt}
+              onChange={(e) => handleOptionChange(idx, e.target.value)}
+            />
+            <input
+              type="radio"
+              name="correctAnswer"
+              className={styles.optionRadio}
+              checked={questionData.answer === opt}
+              onChange={() => setQuestionData(prev => ({ ...prev, answer: opt }))}
+            />
+          </div>
+        ))}
 
         <label>Poeni:</label>
         <input
@@ -156,7 +172,7 @@ function QuestionEdit() {
           onChange={handleChange}
         />
 
-        <button type="submit" className={styles.saveButton}>Sačuvaj izmene</button>
+        <button type="submit" className={styles.submitButton}>Sačuvaj izmene</button>
       </form>
     </div>
   );

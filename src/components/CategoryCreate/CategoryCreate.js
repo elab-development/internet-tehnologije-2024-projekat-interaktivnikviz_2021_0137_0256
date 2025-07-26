@@ -63,7 +63,7 @@ const CategoryCreate = () => {
           rows={4}
         />
 
-        <button type="submit" className={styles.submitButton}>Dodaj</button>
+        <button type="submit" className={styles.saveButton}>Dodaj</button>
       </form>
     </div>
   );

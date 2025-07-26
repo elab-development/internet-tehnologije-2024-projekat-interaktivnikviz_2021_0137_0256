@@ -1,25 +1,28 @@
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
-  background-color: #fff;
+  background: white;
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0px 0px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  color: #222;
+  margin-bottom: 2rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 label {
   font-weight: bold;
+  color: #333;
 }
 
 input[type="text"],
@@ -32,19 +35,19 @@ textarea {
   resize: vertical;
 }
 
-.submitButton {
-  padding: 0.8rem;
-  font-size: 1rem;
-  background-color: #007bff;
+.saveButton {
+  background-color: #19191a !important;
   color: white;
   border: none;
+  padding: 0.8rem;
   border-radius: 6px;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.submitButton:hover {
-  background-color: #0056b3;
+.saveButton:hover {
+  background-color: #000 !important;
 }
 
 .error {

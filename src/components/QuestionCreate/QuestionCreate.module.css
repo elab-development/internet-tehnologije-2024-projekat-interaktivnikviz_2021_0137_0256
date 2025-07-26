@@ -8,6 +8,13 @@
   font-family: Arial, sans-serif;
 }
 
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+}
+
 h2 {
   text-align: center;
   color: #333;
@@ -78,7 +85,7 @@ h2 {
   width: 80%;
   margin: 2rem auto 0;
   padding: 1rem;
-  background-color: #007bff;
+  background-color: #151617;
   color: white;
   border: none;
   border-radius: 8px;
@@ -88,7 +95,7 @@ h2 {
 }
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background-color: #000;
 }
 
 .error {

@@ -1,6 +1,9 @@
+// src/components/QuestionCreate.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
+import { motion } from 'framer-motion';
 import styles from './QuestionCreate.module.css';
 
 const QuestionCreate = () => {
@@ -15,6 +18,8 @@ const QuestionCreate = () => {
   });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,8 +28,14 @@ const QuestionCreate = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then(res => setCategories(res.data))
-    .catch(() => setError('Greška pri učitavanju kategorija.'));
+    .then(res => {
+      setCategories(res.data);
+      setLoadingCategories(false);
+    })
+    .catch(() => {
+      setError('Greška pri učitavanju kategorija.');
+      setLoadingCategories(false);
+    });
   }, []);
 
   const handleOptionChange = (index, value) => {
@@ -43,6 +54,7 @@ const QuestionCreate = () => {
       return;
     }
 
+    setSubmitting(true);
     const token = localStorage.getItem('token');
     const payload = {
       category_id,
@@ -58,73 +70,88 @@ const QuestionCreate = () => {
         'Content-Type': 'application/json',
       },
     })
-      .then(() => {
-        setMessage('Pitanje uspešno kreirano.');
-        setError('');
-        setTimeout(() => navigate('/questions'), 1500);
-      })
-      .catch(() => setError('Greška prilikom kreiranja pitanja.'));
+    .then(() => {
+      setMessage('Pitanje uspešno kreirano.');
+      setError('');
+      setTimeout(() => navigate('/questions'), 1500);
+    })
+    .catch(() => setError('Greška prilikom kreiranja pitanja.'))
+    .finally(() => setSubmitting(false));
   };
 
   return (
     <div className={styles.container}>
-      <h2>Kreiraj Pitanje</h2>
-      {error && <p className={styles.error}>{error}</p>}
-      {message && <p className={styles.success}>{message}</p>}
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <label>Kategorija:</label>
-        <select
-          name="category_id"
-          value={formData.category_id}
-          onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-        >
-          <option value="">Izaberi kategoriju</option>
-          {categories.map(cat => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
-        </select>
-
-        <label>Pitanje:</label>
-        <input
-          type="text"
-          name="question"
-          value={formData.question}
-          onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-        />
-
-        <div className={styles.optionHeader}>
-          <label className={styles.optionLabel}>Odgovor</label>
-          <label className={styles.answerLabel}>Tačan odgovor</label>
+      {loadingCategories ? (
+        <div className={styles.loaderWrapper}>
+          <CircularProgress />
         </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2>Kreiraj Pitanje</h2>
+          {error && <p className={styles.error}>{error}</p>}
+          {message && <p className={styles.success}>{message}</p>}
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <label>Kategorija:</label>
+            <select
+              name="category_id"
+              value={formData.category_id}
+              onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+            >
+              <option value="">Izaberi kategoriju</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
 
-        {formData.options.map((option, index) => (
-          <div key={index} className={styles.optionRow}>
+            <label>Pitanje:</label>
             <input
               type="text"
-              className={styles.optionInput}
-              value={option}
-              onChange={(e) => handleOptionChange(index, e.target.value)}
+              name="question"
+              value={formData.question}
+              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             />
+
+            <div className={styles.optionHeader}>
+              <label className={styles.optionLabel}>Odgovor</label>
+              <label className={styles.answerLabel}>Tačan odgovor</label>
+            </div>
+
+            {formData.options.map((option, index) => (
+              <div key={index} className={styles.optionRow}>
+                <input
+                  type="text"
+                  className={styles.optionInput}
+                  value={option}
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                />
+                <input
+                  type="radio"
+                  name="correctAnswer"
+                  className={styles.optionRadio}
+                  checked={formData.correctAnswerIndex === index}
+                  onChange={() => setFormData({ ...formData, correctAnswerIndex: index })}
+                />
+              </div>
+            ))}
+
+            <label>Broj poena:</label>
             <input
-              type="radio"
-              name="correctAnswer"
-              className={styles.optionRadio}
-              checked={formData.correctAnswerIndex === index}
-              onChange={() => setFormData({ ...formData, correctAnswerIndex: index })}
+              type="number"
+              name="points"
+              value={formData.points}
+              onChange={(e) => setFormData({ ...formData, points: e.target.value })}
             />
-          </div>
-        ))}
 
-        <label>Broj poena:</label>
-        <input
-          type="number"
-          name="points"
-          value={formData.points}
-          onChange={(e) => setFormData({ ...formData, points: e.target.value })}
-        />
-
-        <button type="submit" className={styles.submitButton}>Kreiraj</button>
-      </form>
+            <button type="submit" className={styles.submitButton} disabled={submitting}>
+              {submitting ? <CircularProgress size={24} color="inherit" /> : 'Kreiraj'}
+            </button>
+          </form>
+        </motion.div>
+      )}
     </div>
   );
 };

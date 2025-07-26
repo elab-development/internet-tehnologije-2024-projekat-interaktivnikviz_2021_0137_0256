@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styles from './QuestionList.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Circles } from 'react-loader-spinner';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function QuestionList() {
   const [questions, setQuestions] = useState([]);
@@ -19,16 +23,18 @@ function QuestionList() {
     current_page: 1,
     last_page: 1,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get('http://127.0.0.1:8000/api/question_categories', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    })
-      .then(res => setCategories(res.data))
+    axios
+      .get('http://127.0.0.1:8000/api/question_categories', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => setCategories(res.data))
       .catch(() => setCategories([]));
   }, []);
 
@@ -41,39 +47,45 @@ function QuestionList() {
     if (filters.max_points) params.max_points = filters.max_points;
     params.page = pagination.current_page;
 
-    axios.get('http://127.0.0.1:8000/api/questions', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-      params,
-    })
-      .then(response => {
+    setIsLoading(true);
+    axios
+      .get('http://127.0.0.1:8000/api/questions', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+        params,
+      })
+      .then((response) => {
         setQuestions(response.data.data);
         setPagination({
           current_page: response.data.meta.current_page,
           last_page: response.data.meta.last_page,
         });
+        setIsLoading(false);
       })
-      .catch(() => setError('Failed to fetch questions'));
+      .catch(() => {
+        setError('Failed to fetch questions');
+        setIsLoading(false);
+      });
 
     if (token) {
-      axios.get('http://127.0.0.1:8000/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-        .then(res => setIsAdmin(res.data.is_admin))
+      axios
+        .get('http://127.0.0.1:8000/api/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+        .then((res) => setIsAdmin(res.data.is_admin))
         .catch(() => setIsAdmin(false));
     }
   }, [filters, pagination.current_page]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
-    // Resetuj na prvu stranicu kad filteri promene
-    setPagination(prev => ({ ...prev, current_page: 1 }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setPagination((prev) => ({ ...prev, current_page: 1 }));
   };
 
   const handleDelete = (id) => {
@@ -83,20 +95,21 @@ function QuestionList() {
 
   const confirmDelete = () => {
     const token = localStorage.getItem('token');
-
-    axios.delete(`http://127.0.0.1:8000/api/questions/${questionToDelete}/delete`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    })
+    axios
+      .delete(`http://127.0.0.1:8000/api/questions/${questionToDelete}/delete`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
       .then(() => {
-        setQuestions(prev => prev.filter(q => q.id !== questionToDelete));
+        setQuestions((prev) => prev.filter((q) => q.id !== questionToDelete));
         setShowDeleteModal(false);
         setQuestionToDelete(null);
+        toast.success('Pitanje uspešno obrisano!');
       })
       .catch(() => {
-        alert("Došlo je do greške prilikom brisanja.");
+        alert('Došlo je do greške prilikom brisanja.');
         setShowDeleteModal(false);
         setQuestionToDelete(null);
       });
@@ -104,26 +117,49 @@ function QuestionList() {
 
   const goToNextPage = () => {
     if (pagination.current_page < pagination.last_page) {
-      setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }));
+      setPagination((prev) => ({
+        ...prev,
+        current_page: prev.current_page + 1,
+      }));
     }
   };
 
   const goToPrevPage = () => {
     if (pagination.current_page > 1) {
-      setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }));
+      setPagination((prev) => ({
+        ...prev,
+        current_page: prev.current_page - 1,
+      }));
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <Circles height="80" width="80" color="#007bff" ariaLabel="loading" />
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.questionListContainer}>
+    <motion.div
+      className={styles.questionListContainer}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       <h2>Questions</h2>
+
+      {/* Filteri */}
       <div>
         <label>
           Kategorija:
           <select name="category_id" value={filters.category_id} onChange={handleFilterChange}>
             <option value="">Sve</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </label>
@@ -150,13 +186,22 @@ function QuestionList() {
           />
         </label>
       </div>
+
       {error && <p className={styles.errorMessage}>{error}</p>}
 
       <div className={styles.questionList}>
-        {questions.length > 0 ? questions.map(question => (
-          <div key={question.id} className={styles.questionItem}>
+        {questions.map((question) => (
+          <motion.div
+            key={question.id}
+            className={styles.questionItem}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             <h3>{question.question}</h3>
-            <p><strong>Category:</strong> {question.category_name}</p>
+            <p>
+              <strong>Category:</strong> {question.category_name}
+            </p>
 
             {isAdmin && (
               <>
@@ -174,38 +219,63 @@ function QuestionList() {
                 </button>
               </>
             )}
-          </div>
-        )) : <h3>Pitanja se učitavaju...</h3>}
+          </motion.div>
+        ))}
       </div>
 
       {/* Paginacija */}
       <div className={styles.paginationControls}>
         <button onClick={goToPrevPage} disabled={pagination.current_page === 1}>
-          Prethodna
+          {'<'}
         </button>
-        <span>Strana {pagination.current_page} od {pagination.last_page}</span>
-        <button onClick={goToNextPage} disabled={pagination.current_page === pagination.last_page}>
-          Sledeća
+        <span>
+          {pagination.current_page} od {pagination.last_page}
+        </span>
+        <button
+          onClick={goToNextPage}
+          disabled={pagination.current_page === pagination.last_page}
+        >
+          {'>'}
         </button>
       </div>
 
+      {/* Modal */}
       {showDeleteModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <p>Da li ste sigurni da želite da obrišete ovo pitanje?</p>
+        <motion.div
+          className={styles.modalOverlay}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className={styles.modalContent}
+            initial={{ scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <p className={styles.modalText}>Da li ste sigurni da želite da obrišete ovo pitanje?</p>
             <div className={styles.modalButtons}>
-              <button onClick={confirmDelete} className={styles.confirmButton}>Obriši</button>
-              <button onClick={() => setShowDeleteModal(false)} className={styles.cancelButton}>Otkaži</button>
+              <button onClick={confirmDelete} className={styles.confirmButton}>
+                Obriši
+              </button>
+              <button onClick={() => setShowDeleteModal(false)} className={styles.cancelButton}>
+                Otkaži
+              </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
-      <Link
-        to="/questions/create"
+      {/* Floating dugme sa animacijom */}
+      <motion.div
         className={`${styles.fabButton} ${showDeleteModal ? styles.fabDimmed : ''}`}
-      >+</Link>
-    </div>
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Link to="/questions/create" className={styles.fabLink}>+</Link>
+      </motion.div>
+
+      <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar newestOnTop />
+    </motion.div>
   );
 }
 

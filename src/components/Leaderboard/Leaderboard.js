@@ -11,28 +11,25 @@ const Leaderboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    // Provera da li je admin
+    // Provera admina
     axios.get('http://127.0.0.1:8000/api/profile', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(response => {
-      const isAdmin = response.data.is_admin;
-      setIsAdmin(isAdmin);
-    })
+    .then(response => setIsAdmin(response.data.is_admin))
     .catch(() => setIsAdmin(false));
 
     // Dohvatanje leaderboarda
     axios.get('http://127.0.0.1:8000/api/leaderboards', {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     })
     .then(response => {
       setLeaders(response.data.data);
       setLoading(false);
     })
-    .catch(error => {
+    .catch(() => {
       setError('Greška prilikom učitavanja leaderboarda');
       setLoading(false);
     });
@@ -43,7 +40,7 @@ const Leaderboard = () => {
     axios.get('http://127.0.0.1:8000/api/leaderboards-export', {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       },
       responseType: 'blob'
     })
@@ -54,15 +51,19 @@ const Leaderboard = () => {
       link.setAttribute('download', 'leaderboard.xlsx');
       document.body.appendChild(link);
       link.click();
+      link.remove();
     })
-    .catch(err => {
-      console.error('Greška prilikom eksportovanja:', err);
-      alert('Nešto nije u redu prilikom eksportovanja.');
-    });
+    .catch(() => alert('Nešto nije u redu prilikom eksportovanja.'));
   };
 
-  if (loading) return <p>Učitavanje...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <div className={styles.loader}></div>
+      </div>
+    );
+  }
+  if (error) return <p className={styles.error}>{error}</p>;
 
   return (
     <div className={styles.leaderboard}>
@@ -70,26 +71,21 @@ const Leaderboard = () => {
       <ul>
         {leaders.map((entry, index) => {
           const rankClass =
-            index === 0
-              ? styles.gold
-              : index === 1
-              ? styles.silver
-              : index === 2
-              ? styles.bronze
-              : '';
+            index === 0 ? styles.gold :
+            index === 1 ? styles.silver :
+            index === 2 ? styles.bronze : '';
 
-              const avatarName = entry.user?.avatar && entry.user.avatar.includes('.') 
-                ? entry.user.avatar 
-                : 'default.png';
-
+          const avatarName = entry.user?.avatar && entry.user.avatar.includes('.') 
+            ? entry.user.avatar 
+            : 'default.png';
 
           return (
             <li key={entry.id} className={`${styles.leaderItem} ${rankClass}`}>
               <span className={styles.rank}>{index + 1}.</span>
               <img
-                  src={`/avatars/${avatarName}`}
-                  alt="avatar"
-                  className={styles.leaderAvatar}
+                src={`/avatars/${avatarName}`}
+                alt="avatar"
+                className={styles.leaderAvatar}
               />
               <span className={styles.username}>
                 {entry.user?.username || 'Nepoznat'} - {entry.points} poena

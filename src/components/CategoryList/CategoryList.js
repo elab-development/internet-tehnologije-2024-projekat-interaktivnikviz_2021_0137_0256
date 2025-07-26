@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styles from './CategoryList.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Circles } from 'react-loader-spinner';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -9,6 +11,7 @@ const CategoryList = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -20,9 +23,7 @@ const CategoryList = () => {
           Accept: 'application/json',
         },
       })
-        .then(res => {
-          setIsAdmin(res.data.is_admin);
-        })
+        .then(res => setIsAdmin(res.data.is_admin))
         .catch(() => setIsAdmin(false));
 
       axios.get('http://127.0.0.1:8000/api/question_categories', {
@@ -31,8 +32,14 @@ const CategoryList = () => {
           Accept: 'application/json',
         },
       })
-        .then(response => setCategories(response.data))
-        .catch(() => setError('Greška pri učitavanju kategorija.'));
+        .then(response => {
+          setCategories(response.data);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setError('Greška pri učitavanju kategorija.');
+          setIsLoading(false);
+        });
     }
   }, []);
 
@@ -62,14 +69,33 @@ const CategoryList = () => {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <Circles height="80" width="80" color="#007bff" ariaLabel="loading" />
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.categoryListContainer}>
+    <motion.div
+      className={styles.categoryListContainer}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       <h2>Kategorije</h2>
       {error && <p className={styles.errorMessage}>{error}</p>}
 
       <div className={styles.categoryList}>
         {categories.length > 0 ? categories.map(category => (
-          <div key={category.id} className={styles.categoryItem}>
+          <motion.div
+            key={category.id}
+            className={styles.categoryItem}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             <h3>{category.name}</h3>
             <p>{category.description}</p>
 
@@ -84,31 +110,41 @@ const CategoryList = () => {
                 </button>
               </div>
             )}
-          </div>
-        )) : <h3>Učitavanje kategorija...</h3>}
+          </motion.div>
+        )) : <h3>Nema dostupnih kategorija.</h3>}
       </div>
 
       {isAdmin && (
-        <Link
-          to="/categories/create"
+        <motion.div
           className={`${styles.fabButton} ${showDeleteModal ? styles.fabDimmed : ''}`}
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.95 }}
         >
-          +
-        </Link>
+          <Link to="/categories/create" className={styles.fabLink}>+</Link>
+        </motion.div>
       )}
 
       {showDeleteModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <p>Da li ste sigurni da želite da obrišete ovu kategoriju?</p>
+        <motion.div
+          className={styles.modalOverlay}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className={styles.modalContent}
+            initial={{ scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <p className={styles.modalText}>Da li ste sigurni da želite da obrišete ovu kategoriju?</p>
             <div className={styles.modalButtons}>
               <button onClick={confirmDelete} className={styles.confirmButton}>Obriši</button>
               <button onClick={() => setShowDeleteModal(false)} className={styles.cancelButton}>Otkaži</button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

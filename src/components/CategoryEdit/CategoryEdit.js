@@ -2,31 +2,33 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './CategoryEdit.module.css';
+import { motion } from 'framer-motion';
+import { Circles } from 'react-loader-spinner';
 
 const CategoryEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [formData, setFormData] = useState({
-    name: '',
-    description: ''
-  });
+  const [formData, setFormData] = useState({ name: '', description: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios.get(`http://127.0.0.1:8000/api/question_categories/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
       setFormData({
         name: res.data.name,
         description: res.data.description || ''
       });
+      setLoading(false);
     })
-    .catch(() => setError('Greška prilikom učitavanja kategorije.'));
+    .catch(() => {
+      setError('Greška prilikom učitavanja kategorije.');
+      setLoading(false);
+    });
   }, [id]);
 
   const handleChange = (e) => {
@@ -58,8 +60,21 @@ const CategoryEdit = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <Circles height="80" width="80" color="#007bff" ariaLabel="loading" />
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.container}>
+    <motion.div
+      className={styles.container}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <h2>Izmeni kategoriju</h2>
       {error && <p className={styles.error}>{error}</p>}
       {message && <p className={styles.success}>{message}</p>}
@@ -80,9 +95,9 @@ const CategoryEdit = () => {
           rows={4}
         />
 
-        <button type="submit" className={styles.submitButton}>Sačuvaj izmene</button>
+        <button type="submit" className={styles.saveButton}>Sačuvaj izmene</button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 
