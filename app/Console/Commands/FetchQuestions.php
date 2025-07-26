@@ -10,7 +10,7 @@ use App\Models\QuestionCategory;
 class FetchQuestions extends Command
 {
     protected $signature = 'import:opentdb {amount=10} {categoryId?}';
-    protected $description = 'Importuje pitanja iz OpenTDB u bazu';
+    protected $description = 'Importuje pitanja iz OpenTDB u bazu sa prevodom na srpski';
 
     public function handle()
     {
@@ -36,30 +36,63 @@ class FetchQuestions extends Command
         }
 
         foreach ($data['results'] as $item) {
-            $categoryName = $item['category'];
+            $originalCategory = $item['category'];
+            $translatedCategory = $this->translateToSerbian($originalCategory);
 
-            // Pronađi ili kreiraj kategoriju
+            if (!$translatedCategory || trim($translatedCategory) === '') {
+                $this->error("Upozorenje: prazna kategorija za: " . $originalCategory);
+                $translatedCategory = $originalCategory;
+            }
+
+            $originalQuestion = html_entity_decode($item['question']);
+            $translatedQuestion = $this->translateToSerbian($originalQuestion);
+
+            $originalCorrect = html_entity_decode($item['correct_answer']);
+            $translatedCorrect = $this->translateToSerbian($originalCorrect);
+
+            $translatedIncorrect = [];
+            foreach ($item['incorrect_answers'] as $wrong) {
+                $translatedIncorrect[] = $this->translateToSerbian(html_entity_decode($wrong));
+            }
+
+            $allOptions = $translatedIncorrect;
+            $allOptions[] = $translatedCorrect;
+            shuffle($allOptions);
+
             $category = QuestionCategory::firstOrCreate(
-                ['name' => $categoryName],
+                ['name' => $translatedCategory],
                 ['description' => 'Uvezena iz OpenTDB']
             );
 
-            // Kreiraj opcije (tačan + netačni odgovori)
-            $options = $item['incorrect_answers'];
-            $options[] = $item['correct_answer'];
-            shuffle($options); // pomešaj
-
-            // Unesi pitanje u bazu
             Question::create([
                 'category_id' => $category->id,
-                'question' => html_entity_decode($item['question']),
-                'options' => json_encode($options), // važno!
-                'answer' => $item['correct_answer'],
+                'question' => $translatedQuestion,
+                'options' => json_encode($allOptions),
+                'answer' => $translatedCorrect,
                 'points' => 1
             ]);
         }
 
         $this->info('Pitanja uspešno uvezena.');
         return 0;
+    }
+
+    private function translateToSerbian(string $text): ?string
+    {
+        // Endpoint LibreTranslate
+        $response = Http::post('https://libretranslate.de/translate', [
+            'q' => $text,
+            'source' => 'en',
+            'target' => 'sr',
+            'format' => 'text'
+        ]);
+
+        if ($response->successful()) {
+            $json = $response->json();
+            return $json['translatedText'] ?? $text;
+        }
+
+        // Ako ne uspe, vrati originalni tekst (fallback)
+        return $text;
     }
 }
