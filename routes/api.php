@@ -26,6 +26,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 Route::resource('questions', QuestionController::class)->only(['show', 'index']);
 Route::get('/quiz/random', [QuestionController::class, 'randomQuestions']);
+Route::get('/quiz', [QuestionController::class, 'quiz']);
+Route::get('/quiz/category/{category}', [QuestionController::class, 'randomByCategory']);
+
 
 // --- KORISNIČKE RUTE (Rute za koje je potrebna autentifikacija) ---
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -58,7 +61,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //Resursne rute za korisnike
     Route::resource('question_categories', QuestionCategoryController::class)->only(['show', 'index']);
-   Route::resource('leaderboards', LeaderboardController::class);
+    Route::resource('leaderboards', LeaderboardController::class);
 
     // API ruta za logout korisnika
     Route::post('/logout', [AuthController::class, 'logout']);

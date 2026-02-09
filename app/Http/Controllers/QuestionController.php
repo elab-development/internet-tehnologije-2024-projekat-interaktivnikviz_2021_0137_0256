@@ -259,6 +259,37 @@ public function randomQuestions()
 
     return QuestionResource::collection($questions);
 }
+public function quiz(Request $request)
+{
+    $type = $request->query('type', 'mix');
+    $limit = (int) $request->query('limit', 10);
+
+    $query = Question::with('category');
+
+    if ($type === 'category') {
+        $request->validate([
+            'category_id' => 'required|exists:question_categories,id'
+        ]);
+
+        $query->where('category_id', $request->category_id);
+    }
+
+    $questions = $query
+        ->inRandomOrder()
+        ->take($limit)
+        ->get();
+
+    return QuestionResource::collection($questions);
+}
+public function randomByCategory($categoryId)
+{
+    $questions = Question::where('category_id', $categoryId)
+        ->inRandomOrder()
+        ->take(10)
+        ->get();
+
+    return response()->json(['data' => $questions]);
+}
 
 
 }
