@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 import styles from './QuizPage.module.css';
 
 const QuizPage = () => {
@@ -13,37 +14,55 @@ const QuizPage = () => {
   const [timeLeft, setTimeLeft] = useState(10);
   const [timerRunning, setTimerRunning] = useState(true);
 
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'mix';
+  const categoryId = searchParams.get('category_id');
+
   const shuffleArray = (array) => {
     return [...array].sort(() => Math.random() - 0.5);
   };
 
   const fetchQuestions = () => {
-    const token = localStorage.getItem('token');
-    axios.get('http://127.0.0.1:8000/api/quiz/random', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      const randomizedQuestions = res.data.data.map(q => ({
-        ...q,
-        options: shuffleArray(q.options),
-      }));
+  const token = localStorage.getItem('token');
 
-      setQuestions(randomizedQuestions);
-      setCurrentIndex(0);
-      setScore(0);
-      setSelectedOption(null);
-      setIsCorrect(null);
-      setShowResult(false);
-      setIsGuest(false);
-      setTimeLeft(10);
-      setTimerRunning(true);
-    })
-    .catch(() => alert("Greška pri učitavanju pitanja."));
-  };
+  let url = 'http://127.0.0.1:8000/api/quiz/random';
+  let params = {};
+
+  if (type === 'category' && categoryId) {
+    // Za kategoriju koristimo novu rutu
+    url = `http://127.0.0.1:8000/api/quiz/category/${categoryId}`;
+  } else {
+    // Za mix opciju šaljemo type param
+    params.type = type;
+  }
+
+  axios.get(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    params: params
+  })
+  .then(res => {
+    const randomizedQuestions = res.data.data.map(q => ({
+      ...q,
+      options: shuffleArray(q.options),
+    }));
+
+    setQuestions(randomizedQuestions);
+    setCurrentIndex(0);
+    setScore(0);
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setShowResult(false);
+    setIsGuest(false);
+    setTimeLeft(10);
+    setTimerRunning(true);
+  })
+  .catch(() => alert("Greška pri učitavanju pitanja."));
+};
+
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [type, categoryId]);
 
   useEffect(() => {
     if (!timerRunning || selectedOption || showResult) return;
@@ -67,6 +86,7 @@ const QuizPage = () => {
 
   const handleAnswer = (option) => {
     if (selectedOption) return;
+
     const correct = option === questions[currentIndex].answer;
     setIsCorrect(correct);
     setSelectedOption(option);
@@ -116,7 +136,9 @@ const QuizPage = () => {
     fetchQuestions();
   };
 
-  if (questions.length === 0) return <p className={styles.loading}>Učitavanje pitanja...</p>;
+  if (questions.length === 0) {
+    return <p className={styles.loading}>Učitavanje pitanja...</p>;
+  }
 
   return (
     <div className={styles.quizContainer}>
@@ -125,7 +147,9 @@ const QuizPage = () => {
           <h2>Kviz završen!</h2>
           <p>Ukupno osvojenih poena: {score}</p>
           {isGuest && (
-            <p className={styles.warning}>Da biste sačuvali rezultat, prijavite se.</p>
+            <p className={styles.warning}>
+              Da biste sačuvali rezultat, prijavite se.
+            </p>
           )}
           <button className={styles.nextButton} onClick={restartQuiz}>
             Ponovi kviz
@@ -134,8 +158,14 @@ const QuizPage = () => {
       ) : (
         <>
           <h3>Pitanje {currentIndex + 1} od {questions.length}</h3>
-          <p className={styles.question}><strong>{questions[currentIndex].question}</strong></p>
-          <p className={styles.points}>Poeni: {questions[currentIndex].points}</p>
+
+          <p className={styles.question}>
+            <strong>{questions[currentIndex].question}</strong>
+          </p>
+
+          <p className={styles.points}>
+            Poeni: {questions[currentIndex].points}
+          </p>
 
           <div className={styles.timerBarWrapper}>
             <div
@@ -173,7 +203,9 @@ const QuizPage = () => {
 
           {selectedOption && (
             <button className={styles.nextButton} onClick={nextQuestion}>
-              {currentIndex === questions.length - 1 ? "Završi kviz" : "Sledeće pitanje"}
+              {currentIndex === questions.length - 1
+                ? "Završi kviz"
+                : "Sledeće pitanje"}
             </button>
           )}
         </>

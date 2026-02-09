@@ -23,6 +23,8 @@ import CategoryCreate from './components/CategoryCreate/CategoryCreate';
 import CategoryList from './components/CategoryList/CategoryList';
 import CategoryEdit from './components/CategoryEdit/CategoryEdit'; // Importujemo CategoryEdit komponentu
 import QuizPage from './components/QuizPage/QuizPage';
+import QuizSetupPage from './components/QuizSetup/QuizSetupPage';
+
 
 function App() {
   const [authChanged, setAuthChanged] = useState(false);
@@ -57,7 +59,9 @@ function App() {
             <Register />
           </GuestRoute>
         } />
-    <Route path="/quiz" element={<QuizPage />} />
+    <Route path="/quiz" element={<QuizSetupPage />} />
+    <Route path="/quiz/play" element={<QuizPage />} />
+
         {/* JAVNA RUTA */}
         <Route path="/questions" element={<QuestionList />} />
   <Route path="/profile" element={<Profile />} />
