@@ -28,9 +28,10 @@ h3 {
   border-radius: 6px;
   cursor: pointer;
   background-color: white;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
+/* hover samo ako NIJE pobledelo dugme */
 .optionButton:hover {
   background-color: #f0f0f0;
 }
@@ -38,6 +39,13 @@ h3 {
 .selected {
   border-color: #0056b3;
   background-color: #e6f0ff;
+  opacity: 1;
+}
+
+/* NOVO – pobledelo dugme */
+.faded {
+  opacity: 0.45;
+  filter: grayscale(30%);
 }
 
 .select {

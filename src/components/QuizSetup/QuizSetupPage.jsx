@@ -11,7 +11,7 @@ function QuizSetupPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token] = useState(localStorage.getItem('token'));
 
   const navigate = useNavigate();
 
@@ -29,7 +29,6 @@ function QuizSetupPage() {
       },
     })
       .then(res => {
-        // Laravel API vraća {data: [...]}, neki možda direktno [...]
         setCategories(res.data.data ?? res.data);
         setLoading(false);
       })
@@ -73,14 +72,20 @@ function QuizSetupPage() {
 
       <div className={styles.options}>
         <button
-          className={`${styles.optionButton} ${type === 'mix' ? styles.selected : ''}`}
+          className={`
+            ${styles.optionButton}
+            ${type === 'mix' ? styles.selected : styles.faded}
+          `}
           onClick={() => setType('mix')}
         >
           🎲 Mix (sve kategorije)
         </button>
 
         <button
-          className={`${styles.optionButton} ${type === 'category' ? styles.selected : ''}`}
+          className={`
+            ${styles.optionButton}
+            ${type === 'category' ? styles.selected : styles.faded}
+          `}
           onClick={() => setType('category')}
         >
           📚 Po kategoriji
