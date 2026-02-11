@@ -39,5 +39,9 @@ class Question extends Model
         
     }
    
+public function userPerformances()
+{
+    return $this->hasMany(UserQuestionPerformance::class);
+}
 
 }

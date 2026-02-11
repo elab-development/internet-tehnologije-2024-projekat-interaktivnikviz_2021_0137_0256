@@ -8,6 +8,7 @@ use App\Http\Resources\QuestionResource;
 use App\Models\QuestionCategory;
 use Illuminate\Support\Facades\Log;
 use App\Events\QuestionCreated; 
+use App\Models\UserQuestionPerformance;
 
 class QuestionController extends Controller
 {
@@ -301,5 +302,123 @@ public function randomByCategory($categoryId)
     return response()->json(['data' => $questions]);
 }
 
+public function personalizedQuiz(Request $request)
+{
+    $user = auth()->user();
 
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    $limit = (int) $request->get('limit', 10);
+    $categoryId = $request->get('category_id');
+
+    $query = Question::query();
+    if ($categoryId) {
+        $query->where('category_id', $categoryId);
+    }
+
+    // Dohvati sva pitanja koja zadovoljavaju filter
+    $questions = $query->get();
+
+    // Dohvati sve performance korisnika – indeksirane po question_id
+    $performances = $user->questionPerformances()
+        ->get()
+        ->keyBy('question_id');
+
+    $weights = [];
+
+    foreach ($questions as $question) {
+        $perf = $performances->get($question->id);
+
+        $attempts = $perf?->attempts_count ?? 0;
+        $correct = $perf?->correct_count ?? 0;
+        $lastSeen = $perf?->last_seen_at;
+
+        // Stopa uspeha – ako nema pokušaja, pretpostavi 0.5 (neutralno)
+        $successRate = $attempts > 0 ? $correct / $attempts : 0.5;
+
+        // Vreme od poslednjeg viđanja – u sekundama
+        $timeSinceLastSeen = $lastSeen
+            ? now()->diffInSeconds($lastSeen)
+            : 60 * 60 * 24 * 7; // 7 dana ako nikad viđeno
+
+        // Težina = (1 - stopa_uspeha) * vreme_od_poslednjeg
+        // Veća težina = veća verovatnoća izbora
+        $weight = (1 - $successRate) * $timeSinceLastSeen;
+
+        // Osiguraj da težina bude bar 1 (ne nula)
+        $weights[$question->id] = max($weight, 1);
+    }
+
+    // Izaberi limit pitanja koristeći težinski slučajni izbor
+    $selectedIds = $this->weightedRandomWithoutReplacement($weights, $limit);
+
+    // Dohvati pitanja sa njihovim kategorijama
+    $selectedQuestions = Question::with('category')
+        ->whereIn('id', $selectedIds)
+        ->get();
+
+    // Vrati u istom formatu kao i randomQuestions
+    return QuestionResource::collection($selectedQuestions);
+}
+
+/**
+ * Težinski slučajni izbor BEZ ponavljanja (bez zamene).
+ */
+private function weightedRandomWithoutReplacement($weights, $limit)
+{
+    $selected = [];
+    $available = $weights;
+
+    for ($i = 0; $i < $limit; $i++) {
+        if (empty($available)) {
+            break; // nema više pitanja na raspolaganju
+        }
+
+        $totalWeight = array_sum($available);
+        $rand = mt_rand() / mt_getrandmax() * $totalWeight;
+        $cumulative = 0;
+
+        foreach ($available as $id => $weight) {
+            $cumulative += $weight;
+            if ($rand <= $cumulative) {
+                $selected[] = $id;
+                unset($available[$id]); // ukloni da se ne bi ponovilo
+                break;
+            }
+        }
+    }
+
+    return $selected;
+}
+
+/**
+ * Snimanje odgovora korisnika.
+ */
+public function recordAnswer(Request $request)
+{
+    $request->validate([
+        'question_id' => 'required|exists:questions,id',
+        'is_correct'  => 'required|boolean',
+    ]);
+
+    $user = auth()->user();
+    $questionId = $request->question_id;
+    $isCorrect = $request->is_correct;
+
+    $performance = UserQuestionPerformance::firstOrNew([
+        'user_id' => $user->id,
+        'question_id' => $questionId,
+    ]);
+
+    $performance->attempts_count++;
+    if ($isCorrect) {
+        $performance->correct_count++;
+    }
+    $performance->last_seen_at = now();
+    $performance->save();
+
+    return response()->json(['message' => 'Answer recorded successfully']);
+}
 }

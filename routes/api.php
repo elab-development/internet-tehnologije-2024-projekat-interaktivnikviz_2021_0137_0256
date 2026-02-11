@@ -27,7 +27,7 @@ Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 Route::resource('questions', QuestionController::class)->only(['show', 'index']);
 Route::get('/quiz/random', [QuestionController::class, 'randomQuestions']);
 Route::get('/quiz', [QuestionController::class, 'quiz']);
-Route::get('/quiz/category/{category}', [QuestionController::class, 'randomByCategory']);
+
 
 
 // --- KORISNIČKE RUTE (Rute za koje je potrebna autentifikacija) ---
@@ -48,7 +48,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //Rute za izmenu korisničkog profila
     Route::patch('/profile/update-username', [UserController::class, 'updateUsername']);
     Route::patch('/profile/update-password', [UserController::class, 'updatePassword']);
-
+    Route::get('/quiz/personalized', [QuestionController::class, 'personalizedQuiz']);
+    Route::post('/quiz/record-answer', [QuestionController::class, 'recordAnswer']);
+    Route::get('/quiz/category/{category}', [QuestionController::class, 'randomByCategory']);
 
     //Ruta za preuzimanje korisničkog profilai pamcenje avatara
     Route::post('/profile/avatar', function(Request $request) {

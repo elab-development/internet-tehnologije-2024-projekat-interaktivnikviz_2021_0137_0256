@@ -48,4 +48,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Leaderboard::class);
     }
+public function questionPerformances()
+{
+    return $this->hasMany(UserQuestionPerformance::class);
+}
 }
