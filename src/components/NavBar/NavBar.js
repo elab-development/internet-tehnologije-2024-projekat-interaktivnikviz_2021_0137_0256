@@ -39,8 +39,16 @@ function NavBar({ authChanged }) {
   return (
     <nav className={styles.navbar}>
       <ul className={styles.navLinks}>
-        <li><Link to="/quiz">Kviz</Link></li>
+        {/* Kviz link: guest vidi samo mix */}
+        <li>
+          {isLoggedIn ? (
+            <Link to="/quiz">Kviz</Link>
+          ) : (
+            <Link to="/quiz?type=mix">Kviz</Link>
+          )}
+        </li>
 
+        {/* Linkovi samo za ulogovanog korisnika */}
         {isLoggedIn && (
           <>
             <li><Link to="/leaderboards">Leaderboard</Link></li>
@@ -56,10 +64,12 @@ function NavBar({ authChanged }) {
           </>
         )}
 
+        {/* Guest registracija */}
         {!isLoggedIn && (
           <li><Link to="/register">Register</Link></li>
         )}
 
+        {/* Login / Logout dugme */}
         <li>
           {isLoggedIn ? (
             <button onClick={handleLogout} className={styles.logoutButton}>

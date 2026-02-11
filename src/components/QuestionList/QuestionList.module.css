@@ -86,13 +86,35 @@ h2 {
   color: #333;
 }
 
+
+/* Dugme Obriši - crveno */
+.DeleteButton {
+  margin-left: 0.5px;
+  background: #dc3545!important;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, filter 0.2s ease;
+  user-select: none;
+}
+
+/* Povećana specifičnost – dva puta klasa */
+.DeleteButton.DeleteButton:hover {
+   /* tamnija crvena */
+  /* ili koristi filter umesto promene boje:*/
+ 
+  background: #db1f32!important; /* zadržava originalnu boju */
+}
+
 /* Dugmad Read More i Edit - tamno sivi sa belim tekstom */
 .Button {
   display: inline-block;
   margin-top: 1rem;
   margin-right: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: #444; /* tamno siva */
+  background: #444; /* tamno siva */
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -100,26 +122,8 @@ h2 {
   cursor: pointer;
   user-select: none;
 }
-
 .Button:hover {
-  background-color: #000; /* na hover crna */
-}
-
-/* Dugme Obriši - crveno */
-.DeleteButton {
-  margin-left: 0.5px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  user-select: none;
-}
-
-.DeleteButton:hover {
-  background-color: #b52a37;
+  background: #000; /* crno na hover */
 }
 
 /* Modal overlay (pozadina) */
@@ -162,7 +166,7 @@ h2 {
 }
 
 .confirmButton {
-  background-color: #dc3545;
+  background: #dc3545 !important;
   color: white;
   padding: 0.5rem 1.2rem;
   border: none;
@@ -172,11 +176,11 @@ h2 {
 }
 
 .confirmButton:hover {
-  background-color: #b52a37;
+  background: #b52a37 !important;
 }
 
 .cancelButton {
-  background-color: #6c757d;
+  background: #6c757d;
   color: white;
   padding: 0.5rem 1.2rem;
   border: none;
@@ -186,7 +190,7 @@ h2 {
 }
 
 .cancelButton:hover {
-  background-color: #5a6268;
+  background: #5a6268;
 }
 
 /* Paginacija - centrirana */

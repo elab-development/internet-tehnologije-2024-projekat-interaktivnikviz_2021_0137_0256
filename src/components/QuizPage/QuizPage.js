@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './QuizPage.module.css';
 
 const QuizPage = () => {
@@ -15,7 +15,8 @@ const QuizPage = () => {
   const [answersLog, setAnswersLog] = useState([]);
 
   const [searchParams] = useSearchParams();
-  const type = searchParams.get('type') || 'mix';
+  const navigate = useNavigate();
+  let type = searchParams.get('type') || 'mix';
   const categoryId = searchParams.get('category_id');
 
   const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
@@ -45,14 +46,23 @@ const QuizPage = () => {
       setScore(0);
       setSelectedOption(null);
       setShowResult(false);
-      setIsGuest(false);
+      setIsGuest(!token);
       setTimeLeft(10);
       setTimerRunning(true);
       setAnswersLog([]);
     });
   };
 
-  useEffect(() => { fetchQuestions(); }, [type, categoryId]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    // Ako guest pokuša da otvori category kviz, preusmeri na mix
+    if (!token && type !== 'mix') {
+      navigate('/quiz?type=mix', { replace: true });
+      type = 'mix';
+      return;
+    }
+    fetchQuestions();
+  }, [type, categoryId]);
 
   useEffect(() => {
     if (!timerRunning || selectedOption || showResult) return;
@@ -100,7 +110,6 @@ const QuizPage = () => {
   const submitScore = () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      setIsGuest(true);
       setShowResult(true);
       return;
     }
