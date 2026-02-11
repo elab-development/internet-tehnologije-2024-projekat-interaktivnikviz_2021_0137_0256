@@ -22,8 +22,10 @@ const QuizPage = () => {
   const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
 
   const fetchQuestions = () => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
+  // Ako je GUEST – koristi postojeće rute (random ili category)
+  if (!token) {
     let url = 'http://127.0.0.1:8000/api/quiz/random';
     let params = {};
 
@@ -46,23 +48,57 @@ const QuizPage = () => {
       setScore(0);
       setSelectedOption(null);
       setShowResult(false);
-      setIsGuest(!token);
+      setIsGuest(true);
       setTimeLeft(10);
       setTimerRunning(true);
       setAnswersLog([]);
     });
+    return;
+  }
+
+  // Ako je ULOGOVAN – koristi personalizovani kviz
+  let url = 'http://127.0.0.1:8000/api/quiz/personalized';
+  let params = {
+    limit: 10 // možeš i dinamički
   };
 
+  if (type === 'category' && categoryId) {
+    params.category_id = categoryId;
+  }
+
+  axios.get(url, {
+    headers: { Authorization: `Bearer ${token}` },
+    params
+  })
+  .then(res => {
+    setQuestions(res.data.data.map(q => ({
+      ...q,
+      options: shuffleArray(q.options)
+    })));
+    setCurrentIndex(0);
+    setScore(0);
+    setSelectedOption(null);
+    setShowResult(false);
+    setIsGuest(false);
+    setTimeLeft(10);
+    setTimerRunning(true);
+    setAnswersLog([]);
+  })
+  .catch(error => {
+    console.error('Failed to fetch personalized quiz', error);
+    // Fallback na random ako personalizovani ne radi?
+  });
+};
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    // Ako guest pokuša da otvori category kviz, preusmeri na mix
-    if (!token && type !== 'mix') {
-      navigate('/quiz?type=mix', { replace: true });
-      type = 'mix';
-      return;
-    }
-    fetchQuestions();
-  }, [type, categoryId]);
+  const token = localStorage.getItem('token');
+  // Ako guest pokuša da otvori category kviz, preusmeri na mix
+  if (!token && type !== 'mix') {
+    navigate('/quiz?type=mix', { replace: true });
+    return;
+  }
+  fetchQuestions();
+}, [type, categoryId]);
 
   useEffect(() => {
     if (!timerRunning || selectedOption || showResult) return;
@@ -77,23 +113,36 @@ const QuizPage = () => {
   }, [timeLeft, timerRunning, selectedOption, showResult]);
 
   const handleAnswer = (option) => {
-    if (selectedOption) return;
+  if (selectedOption) return;
 
-    const q = questions[currentIndex];
-    const correct = option === q.answer;
+  const q = questions[currentIndex];
+  const correct = option === q.answer;
 
-    setSelectedOption(option);
-    setTimerRunning(false);
+  setSelectedOption(option);
+  setTimerRunning(false);
 
-    setAnswersLog(prev => [...prev, {
-      question: q.question,
-      selected: option,
-      correctAnswer: q.answer,
-      isCorrect: correct
-    }]);
+  setAnswersLog(prev => [...prev, {
+    question: q.question,
+    selected: option,
+    correctAnswer: q.answer,
+    isCorrect: correct
+  }]);
 
-    if (correct) setScore(s => s + q.points);
-  };
+  if (correct) setScore(s => s + q.points);
+
+  // Snimi odgovor na backend – samo za ulogovane
+  const token = localStorage.getItem('token');
+  if (token) {
+    axios.post('http://127.0.0.1:8000/api/quiz/record-answer',
+      {
+        question_id: q.id,
+        is_correct: correct
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ).catch(err => console.error('Failed to record answer', err));
+  }
+};
+
 
   const nextQuestion = () => {
     setSelectedOption(null);
