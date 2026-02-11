@@ -255,22 +255,29 @@ public function destroy(Question $question)
 
 public function randomQuestions()
 {
-    $questions = Question::inRandomOrder()->take(8)->with('category')->get();
-
+    $questions = Question::with('category')->inRandomOrder()->take(10)->get();
     return QuestionResource::collection($questions);
 }
+
 public function quiz(Request $request)
 {
-    $type = $request->query('type', 'mix');
+    $type = $request->query('type', 'mix'); // mix po defaultu
     $limit = (int) $request->query('limit', 10);
+
+    // Ako guest korisnik (nije ulogovan) i type nije mix
+    if (!auth()->check() && $type !== 'mix') {
+        return response()->json([
+            'message' => 'Guests can only play the mix quiz'
+        ], 403);
+    }
 
     $query = Question::with('category');
 
+    // Ako je type category, mora biti ulogovan
     if ($type === 'category') {
         $request->validate([
             'category_id' => 'required|exists:question_categories,id'
         ]);
-
         $query->where('category_id', $request->category_id);
     }
 
@@ -279,8 +286,11 @@ public function quiz(Request $request)
         ->take($limit)
         ->get();
 
-    return QuestionResource::collection($questions);
+    return response()->json([
+        'data' => $questions
+    ]);
 }
+
 public function randomByCategory($categoryId)
 {
     $questions = Question::where('category_id', $categoryId)
